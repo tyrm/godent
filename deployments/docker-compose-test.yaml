@@ -1,0 +1,18 @@
+---
+version: '3.7'
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - 127.0.0.1:5432:5432/tcp
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=test
+    restart: always
+  redis:
+    image: redis:6
+    command: redis-server --requirepass test
+    ports:
+      - 127.0.0.1:6379:6379/tcp
+    restart: always

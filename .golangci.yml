@@ -1,0 +1,25 @@
+---
+linters:
+  enable:
+    - godot
+    - godox
+    - gofmt
+    - gofumpt
+    - goimports
+    - ireturn
+    - misspell
+    - nilerr
+    - nilnil
+    - nlreturn
+    - noctx
+    - nonamedreturns
+
+linters-settings:
+  ireturn:
+    allow:
+      - db.Error
+      - error
+      - net/http.Handler
+
+run:
+  issues-exit-code: 1
