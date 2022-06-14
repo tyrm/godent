@@ -1,5 +1,13 @@
 PROJECT_NAME=godent
 
+build-snapshot:
+	goreleaser release --snapshot --rm-dist
+
+bun-new-migration: export BUN_TIMESTAMP=$(shell date +%Y%m%d%H%M%S | head -c 14)
+bun-new-migration:
+	touch internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
+	cat internal/db/bun/migrations/migration.go.tmpl > internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
+
 check:
 	golangci-lint run
 
@@ -23,4 +31,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: check check-fix docker-pull docker-restart docker-start docker-stop tidy vendor
+.PHONY: build-snapshot bun-new-migration check check-fix docker-pull docker-restart docker-start docker-stop tidy vendor
