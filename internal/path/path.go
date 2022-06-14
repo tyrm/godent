@@ -3,7 +3,7 @@ package path
 const (
 	BasePath = "/" + PartMatrix + "/" + PartIdentity
 
-	// versions
+	// versions.
 
 	Versions = BasePath + "/" + PartVersions
 )

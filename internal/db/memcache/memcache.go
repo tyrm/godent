@@ -2,13 +2,14 @@ package memcache
 
 import (
 	"context"
+	"time"
+
 	"github.com/allegro/bigcache/v3"
 	"github.com/tyrm/godent/internal/db"
-	"time"
 )
 
 const (
-	defaultShards = 32
+	defaultShards           = 32
 	defaultHardMaxCacheSize = 8192
 
 	utint64size = 8
@@ -43,7 +44,7 @@ func New(_ context.Context, d db.DB) (*MemCache, error) {
 	}
 
 	return &MemCache{
-		db:      d,
+		db: d,
 
 		count: count,
 

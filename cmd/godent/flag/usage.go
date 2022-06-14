@@ -21,5 +21,5 @@ var usage = config.KeyNames{
 	DBLoadTestData: "Should test data be loaded into the database",
 
 	// server
-	ServerRoles:       "Server roles that should be started: [webapp]",
+	ServerRoles: "Server roles that should be started: [webapp]",
 }

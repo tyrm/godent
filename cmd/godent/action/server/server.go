@@ -3,6 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/config"
@@ -12,9 +16,6 @@ import (
 	"github.com/tyrm/godent/internal/http/versions"
 	"github.com/tyrm/godent/internal/kv/redis"
 	"github.com/tyrm/godent/internal/util"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 // Start starts the server.

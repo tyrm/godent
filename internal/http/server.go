@@ -2,11 +2,12 @@ package http
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
-	"net/http"
-	"time"
 )
 
 const serverTimeout = 60 * time.Second
@@ -77,12 +78,12 @@ func (*Server) MiddlewareMetrics(next http.Handler) http.Handler {
 		next.ServeHTTP(wx, r)
 
 		go func() {
-			l.Debugf("rendering %s took %d ms", r.URL.Path, time.Now().Sub(started))
+			l.Debugf("rendering %s took %d ms", r.URL.Path, time.Since(started))
 		}()
 	})
 }
 
-// MiddlewareJSONHeader sends the Content-Type header to application/json
+// MiddlewareJSONHeader sends the Content-Type header to application/json.
 func (*Server) MiddlewareJSONHeader(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

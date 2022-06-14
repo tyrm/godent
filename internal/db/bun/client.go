@@ -8,6 +8,10 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"os"
+	"runtime"
+	"strings"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/spf13/viper"
@@ -19,9 +23,6 @@ import (
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/extra/bundebug"
 	"modernc.org/sqlite"
-	"os"
-	"runtime"
-	"strings"
 )
 
 const (
@@ -47,7 +48,7 @@ type Client struct {
 }
 
 // New creates a new bun database client.
-func New(ctx context.Context) (db.DB, error) {
+func New(ctx context.Context) (*Client, error) {
 	var newBun *Bun
 	var err error
 	dbType := strings.ToLower(viper.GetString(config.Keys.DBType))
@@ -99,7 +100,7 @@ func sqliteConn(ctx context.Context) (*Bun, error) {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
 		}
 
-		return nil, fmt.Errorf("could not open sqlite bun: %s", err)
+		return nil, fmt.Errorf("could not open sqlite bun: %s", err.Error())
 	}
 
 	setConnectionValues(sqldb)
@@ -123,7 +124,7 @@ func sqliteConn(ctx context.Context) (*Bun, error) {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
 		}
 
-		return nil, fmt.Errorf("sqlite ping: %s", err)
+		return nil, fmt.Errorf("sqlite ping: %s", err.Error())
 	}
 
 	l.Info("connected to SQLITE database")
@@ -136,7 +137,7 @@ func pgConn(ctx context.Context) (*Bun, error) {
 
 	opts, err := deriveBunDBPGOptions()
 	if err != nil {
-		return nil, fmt.Errorf("could not create bundb postgres options: %s", err)
+		return nil, fmt.Errorf("could not create bundb postgres options: %s", err.Error())
 	}
 
 	sqldb := stdlib.OpenDB(*opts)

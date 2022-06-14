@@ -1,11 +1,12 @@
 package log
 
 import (
+	"reflect"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
-	"reflect"
-	"strings"
 )
 
 // Init the logging engine.

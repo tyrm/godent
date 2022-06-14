@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+
 	redis "github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"

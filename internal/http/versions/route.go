@@ -1,9 +1,10 @@
 package versions
 
 import (
+	"net/http"
+
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/path"
-	"net/http"
 )
 
 // Route attaches routes to the web server.

@@ -1,5 +1,11 @@
 PROJECT_NAME=godent
 
+check:
+	golangci-lint run
+
+check-fix:
+	golangci-lint run --fix
+
 docker-pull:
 	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml pull
 
@@ -17,4 +23,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: docker-pull docker-restart docker-start docker-stop tidy vendor
+.PHONY: check check-fix docker-pull docker-restart docker-start docker-stop tidy vendor

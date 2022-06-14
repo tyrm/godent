@@ -2,16 +2,15 @@ package bun
 
 import (
 	"errors"
+
 	"github.com/jackc/pgconn"
 	"github.com/tyrm/godent/internal/db"
 	"modernc.org/sqlite"
 	sqlite3 "modernc.org/sqlite/lib"
 )
 
-var (
-	// ErrNoDatabaseSet is returned when a database isn't specified in config.
-	ErrNoDatabaseSet = errors.New("no database set")
-)
+// ErrNoDatabaseSet is returned when a database isn't specified in config.
+var ErrNoDatabaseSet = errors.New("no database set")
 
 // processPostgresError processes an error, replacing any postgres specific errors with our own error type.
 func processPostgresError(err error) db.Error {

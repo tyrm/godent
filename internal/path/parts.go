@@ -1,7 +1,7 @@
 package path
 
-const(
+const (
 	PartIdentity = "identity"
-	PartMatrix = "_matrix"
+	PartMatrix   = "_matrix"
 	PartVersions = "versions"
 )
