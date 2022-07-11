@@ -13,7 +13,7 @@ require (
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
-	github.com/uptrace/bun v1.1.5
+	github.com/uptrace/bun v1.1.6
 	github.com/uptrace/bun/dialect/pgdialect v1.1.5
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.5
 	github.com/uptrace/bun/extra/bundebug v1.1.5
