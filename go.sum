@@ -507,8 +507,9 @@ github.com/subosito/gotenv v1.3.0/go.mod h1:YzJjq/33h7nrwdY+iHMhEOEEbW0ovIz0tB6t
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc h1:9lRDQMhESg+zvGYmW5DyG0UqvY96Bu5QYsTLvCHdrgo=
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc/go.mod h1:bciPuU6GHm1iF1pBvUfxfsH0Wmnc2VbpgvbI9ZWuIRs=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
-github.com/uptrace/bun v1.1.5 h1:YqQvSXWXTOhz1uqkYO2F2XV6BqY9a/tXuA8lQlW0FjE=
 github.com/uptrace/bun v1.1.5/go.mod h1:Z2Pd3cRvNKbrYuL6Gp1XGjA9QEYz+rDz5KkEi9MZLnQ=
+github.com/uptrace/bun v1.1.7 h1:biOoh5dov69hQPBlaRsXSHoEOIEnCxFzQvUmbscSNJI=
+github.com/uptrace/bun v1.1.7/go.mod h1:Z2Pd3cRvNKbrYuL6Gp1XGjA9QEYz+rDz5KkEi9MZLnQ=
 github.com/uptrace/bun/dialect/pgdialect v1.1.5 h1:Yuhrcm297oj864fDy4E6ykhvTJA9cUiXrkaOgR3Z0cQ=
 github.com/uptrace/bun/dialect/pgdialect v1.1.5/go.mod h1:HEREbJYNSOrMOVqQB1mNs6Bni+ACyFTkgWakWG5taY0=
 github.com/uptrace/bun/dialect/sqlitedialect v1.1.5 h1:dCB4bBJbxJDtiAuIXtVDwJ0w8e38B0J42KnV9Pye8V0=
