@@ -26,14 +26,23 @@ func WithLocksTableName(table string) MigratorOption {
 	}
 }
 
+// WithMarkAppliedOnSuccess sets the migrator to only mark migrations as applied/unapplied
+// when their up/down is successful
+func WithMarkAppliedOnSuccess(enabled bool) MigratorOption {
+	return func(m *Migrator) {
+		m.markAppliedOnSuccess = enabled
+	}
+}
+
 type Migrator struct {
 	db         *bun.DB
 	migrations *Migrations
 
 	ms MigrationSlice
 
-	table      string
-	locksTable string
+	table                string
+	locksTable           string
+	markAppliedOnSuccess bool
 }
 
 func NewMigrator(db *bun.DB, migrations *Migrations, opts ...MigratorOption) *Migrator {
@@ -65,7 +74,7 @@ func (m *Migrator) MigrationsWithStatus(ctx context.Context) (MigrationSlice, er
 func (m *Migrator) migrationsWithStatus(ctx context.Context) (MigrationSlice, int64, error) {
 	sorted := m.migrations.Sorted()
 
-	applied, err := m.selectAppliedMigrations(ctx)
+	applied, err := m.AppliedMigrations(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -148,15 +157,22 @@ func (m *Migrator) Migrate(ctx context.Context, opts ...MigrationOption) (*Migra
 		migration := &migrations[i]
 		migration.GroupID = group.ID
 
-		// Always mark migration as applied so the rollback has a chance to fix the database.
-		if err := m.MarkApplied(ctx, migration); err != nil {
-			return group, err
+		if !m.markAppliedOnSuccess {
+			if err := m.MarkApplied(ctx, migration); err != nil {
+				return group, err
+			}
 		}
 
 		group.Migrations = migrations[:i+1]
 
 		if !cfg.nop && migration.Up != nil {
 			if err := migration.Up(ctx, m.db); err != nil {
+				return group, err
+			}
+		}
+
+		if m.markAppliedOnSuccess {
+			if err := m.MarkApplied(ctx, migration); err != nil {
 				return group, err
 			}
 		}
@@ -187,14 +203,21 @@ func (m *Migrator) Rollback(ctx context.Context, opts ...MigrationOption) (*Migr
 	for i := len(lastGroup.Migrations) - 1; i >= 0; i-- {
 		migration := &lastGroup.Migrations[i]
 
-		// Always mark migration as unapplied to match migrate behavior.
-		if err := m.MarkUnapplied(ctx, migration); err != nil {
-			return nil, err
+		if !m.markAppliedOnSuccess {
+			if err := m.MarkUnapplied(ctx, migration); err != nil {
+				return lastGroup, err
+			}
 		}
 
 		if !cfg.nop && migration.Down != nil {
 			if err := migration.Down(ctx, m.db); err != nil {
-				return nil, err
+				return lastGroup, err
+			}
+		}
+
+		if m.markAppliedOnSuccess {
+			if err := m.MarkUnapplied(ctx, migration); err != nil {
+				return lastGroup, err
 			}
 		}
 	}
@@ -315,8 +338,31 @@ func (m *Migrator) MarkUnapplied(ctx context.Context, migration *Migration) erro
 	return err
 }
 
-// selectAppliedMigrations selects applied (applied) migrations in descending order.
-func (m *Migrator) selectAppliedMigrations(ctx context.Context) (MigrationSlice, error) {
+func (m *Migrator) TruncateTable(ctx context.Context) error {
+	_, err := m.db.NewTruncateTable().TableExpr(m.table).Exec(ctx)
+	return err
+}
+
+// MissingMigrations returns applied migrations that can no longer be found.
+func (m *Migrator) MissingMigrations(ctx context.Context) (MigrationSlice, error) {
+	applied, err := m.AppliedMigrations(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	existing := migrationMap(m.migrations.ms)
+	for i := len(applied) - 1; i >= 0; i-- {
+		m := &applied[i]
+		if _, ok := existing[m.Name]; ok {
+			applied = append(applied[:i], applied[i+1:]...)
+		}
+	}
+
+	return applied, nil
+}
+
+// AppliedMigrations selects applied (applied) migrations in descending order.
+func (m *Migrator) AppliedMigrations(ctx context.Context) (MigrationSlice, error) {
 	var ms MigrationSlice
 	if err := m.db.NewSelect().
 		ColumnExpr("*").
