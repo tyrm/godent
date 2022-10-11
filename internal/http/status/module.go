@@ -1,4 +1,4 @@
-package versions
+package status
 
 import (
 	"context"
@@ -16,7 +16,7 @@ func New(_ context.Context) (*Module, error) {
 
 // Name return the module name.
 func (*Module) Name() string {
-	return "versions"
+	return "status"
 }
 
 // SetServer adds a reference to the server to the module.

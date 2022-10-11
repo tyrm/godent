@@ -30,7 +30,6 @@ type Values struct {
 
 	// server
 	ServerHTTPBind string
-	ServerRoles    []string
 }
 
 // Defaults contains the default values.
@@ -60,7 +59,4 @@ var Defaults = Values{
 
 	// server
 	ServerHTTPBind: ":5000",
-	ServerRoles: []string{
-		ServerRoleVersions,
-	},
 }

@@ -3,19 +3,17 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/tyrm/godent/internal/http/status"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/spf13/viper"
 	"github.com/tyrm/godent/cmd/godent/action"
-	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/db/bun"
 	"github.com/tyrm/godent/internal/db/memcache"
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/http/versions"
 	"github.com/tyrm/godent/internal/kv/redis"
-	"github.com/tyrm/godent/internal/util"
 )
 
 // Start starts the server.
@@ -68,16 +66,23 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// create web modules
 	var webModules []gdhttp.Module
-	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleVersions) {
-		l.Infof("adding wellknown module")
-		webMod, err := versions.New(ctx)
-		if err != nil {
-			l.Errorf("wellknown module: %s", err.Error())
+	l.Infof("adding versions module")
+	httpVersions, err := versions.New(ctx)
+	if err != nil {
+		l.Errorf("wellknown module: %s", err.Error())
 
-			return err
-		}
-		webModules = append(webModules, webMod)
+		return err
 	}
+	webModules = append(webModules, httpVersions)
+
+	l.Infof("adding status module")
+	httpStatus, err := status.New(ctx)
+	if err != nil {
+		l.Errorf("wellknown module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpStatus)
 
 	// add modules to server
 	for _, mod := range webModules {

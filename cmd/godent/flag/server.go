@@ -11,5 +11,4 @@ func Server(cmd *cobra.Command, values config.Values) {
 
 	// server
 	cmd.PersistentFlags().String(config.Keys.ServerHTTPBind, values.ServerHTTPBind, usage.ServerHTTPBind)
-	cmd.PersistentFlags().StringArray(config.Keys.ServerRoles, values.ServerRoles, usage.ServerRoles)
 }
