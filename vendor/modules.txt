@@ -167,8 +167,8 @@ github.com/uptrace/bun/schema
 # github.com/uptrace/bun/dialect/pgdialect v1.1.5
 ## explicit; go 1.17
 github.com/uptrace/bun/dialect/pgdialect
-# github.com/uptrace/bun/dialect/sqlitedialect v1.1.5
-## explicit; go 1.17
+# github.com/uptrace/bun/dialect/sqlitedialect v1.1.8
+## explicit; go 1.18
 github.com/uptrace/bun/dialect/sqlitedialect
 # github.com/uptrace/bun/extra/bundebug v1.1.8
 ## explicit; go 1.18

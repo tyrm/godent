@@ -15,7 +15,7 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/uptrace/bun v1.1.8
 	github.com/uptrace/bun/dialect/pgdialect v1.1.5
-	github.com/uptrace/bun/dialect/sqlitedialect v1.1.5
+	github.com/uptrace/bun/dialect/sqlitedialect v1.1.8
 	github.com/uptrace/bun/extra/bundebug v1.1.8
 	modernc.org/sqlite v1.17.3
 )
