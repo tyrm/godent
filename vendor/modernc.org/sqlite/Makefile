@@ -45,6 +45,10 @@ build_all_targets:
 	GOOS=freebsd GOARCH=amd64 go test -c -o /dev/null
 	GOOS=freebsd GOARCH=386 go build -v ./...
 	GOOS=freebsd GOARCH=386 go test -c -o /dev/null
+	GOOS=freebsd GOARCH=arm go build -v ./...
+	GOOS=freebsd GOARCH=arm go test -c -o /dev/null
+	GOOS=freebsd GOARCH=arm64 go build -v ./...
+	GOOS=freebsd GOARCH=arm64 go test -c -o /dev/null
 	GOOS=linux GOARCH=386 go build -v ./...
 	GOOS=linux GOARCH=386 go test -c -o /dev/null
 	GOOS=linux GOARCH=amd64 go build -v ./...
@@ -117,6 +121,12 @@ freebsd_386:
 	go generate 2>&1 | tee log-generate
 	go build -v ./...
 
+# 3900x/qemu
+freebsd_arm:
+	@echo "Should be executed only on freebsd/arm."
+	go generate 2>&1 | tee log-generate
+	go build -v ./...
+
 # 3900x
 linux_amd64:
 	@echo "Should be executed only on linux/amd64."
@@ -165,7 +175,7 @@ openbsd_amd64:
 	go generate 2>&1 | tee log-generate
 	go build -v ./...
 
-generate_all_targets_on_linux_amd64: linux_amd64 linux_386 linux_arm linux_arm64 linux_s390x linux_ppc64le linux_riscv64 windows_amd64 #TODO windows_386
+generate_all_targets_on_linux_amd64: linux_amd64 linux_386 linux_arm linux_arm64 linux_s390x linux_ppc64le linux_riscv64 windows_amd64 windows_arm64 #TODO windows_386
 	gofmt -l -s -w .
 	echo done
 

@@ -84,6 +84,7 @@ build_all_targets:
 	GOOS=linux GOARCH=s390x go test -c -o /dev/null
 	GOOS=netbsd GOARCH=amd64 go test -c -o /dev/null
 	GOOS=openbsd GOARCH=amd64 go test -c -o /dev/null
+	GOOS=openbsd GOARCH=arm64 go test -c -o /dev/null
 	GOOS=windows GOARCH=386 go test -c -o /dev/null
 	GOOS=windows GOARCH=amd64 go test -c -o /dev/null
 	GOOS=windows GOARCH=arm64 go test -c -o /dev/null
@@ -116,7 +117,7 @@ edit:
 
 editor:
 	gofmt -l -s -w *.go
-	go build -v -o $(GOPATH)/bin/ccgo modernc.org/ccgo/v3
+	go build -v -o $(GOPATH)/bin/ccgo3 modernc.org/ccgo/v3
 	go test -c -o /dev/null
 
 later:
