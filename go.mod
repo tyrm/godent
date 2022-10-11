@@ -13,10 +13,10 @@ require (
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.12.0
-	github.com/uptrace/bun v1.1.5
+	github.com/uptrace/bun v1.1.8
 	github.com/uptrace/bun/dialect/pgdialect v1.1.5
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.5
-	github.com/uptrace/bun/extra/bundebug v1.1.5
+	github.com/uptrace/bun/extra/bundebug v1.1.8
 	modernc.org/sqlite v1.17.3
 )
 
@@ -40,8 +40,8 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
