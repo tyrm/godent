@@ -30,7 +30,6 @@ type KeyNames struct {
 
 	// server
 	ServerHTTPBind string
-	ServerRoles    string
 }
 
 // Keys contains the names of config keys.
@@ -63,5 +62,4 @@ var Keys = KeyNames{
 
 	// server
 	ServerHTTPBind: "http-bind",
-	ServerRoles:    "server-role",
 }

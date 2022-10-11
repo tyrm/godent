@@ -19,7 +19,4 @@ var usage = config.KeyNames{
 	DBTLSMode:      "Database tls mode",
 	DBTLSCACert:    "Path to CA cert for db tls connection",
 	DBLoadTestData: "Should test data be loaded into the database",
-
-	// server
-	ServerRoles: "Server roles that should be started: [webapp]",
 }
