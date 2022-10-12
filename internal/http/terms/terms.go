@@ -87,6 +87,7 @@ func unknownURLs(termURLs, userAccepts []string) []string {
 		for _, termURL := range termURLs {
 			if termURL == userAccept {
 				found = true
+
 				break
 			}
 		}

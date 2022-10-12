@@ -52,7 +52,7 @@ func (c *Client) fetchServerWellKnown(ctx context.Context, serverName string) (s
 }
 
 func (c *Client) fetchServerSRV(ctx context.Context, serverName string) (string, error) {
-	ctx, tracer := c.tracer.Start(ctx, "fetchServerWellKnown", trace.WithSpanKind(trace.SpanKindInternal))
+	_, tracer := c.tracer.Start(ctx, "fetchServerWellKnown", trace.WithSpanKind(trace.SpanKindInternal))
 	defer tracer.End()
 
 	_, srvs, err := net.LookupSRV("matrix", "tcp", serverName)

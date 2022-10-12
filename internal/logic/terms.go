@@ -157,6 +157,7 @@ func (t *Terms) IsFullyAgreed(userAccepts []string) bool {
 		for _, u := range userAccepts {
 			if p.HasURL(u) {
 				found = true
+
 				continue
 			}
 		}
