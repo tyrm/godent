@@ -14,7 +14,6 @@ func Database(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().String(config.Keys.DBDatabase, values.DBDatabase, usage.DBDatabase)
 	cmd.PersistentFlags().String(config.Keys.DBTLSMode, values.DBTLSMode, usage.DBTLSMode)
 	cmd.PersistentFlags().String(config.Keys.DBTLSCACert, values.DBTLSCACert, usage.DBTLSCACert)
-	cmd.PersistentFlags().String(config.Keys.DBEncryptionKey, values.DBEncryptionKey, usage.DBEncryptionKey)
 }
 
 // DatabaseMigrate adds all flags for running the database migrate command.

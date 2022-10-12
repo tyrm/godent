@@ -66,17 +66,11 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
-	// login
-	logicMod, err := logic.New(
-		ctx,
+	// logic
+	logicMod := logic.New(
 		dbClient,
 		federatingClient,
 	)
-	if err != nil {
-		l.Errorf("logic: %s", err.Error())
-
-		return err
-	}
 
 	// create http server
 	l.Debug("creating http server")
@@ -134,6 +128,14 @@ var Start action.Action = func(ctx context.Context) error {
 
 			return err
 		}
+	}
+
+	// start logic module
+	err = logicMod.Start(ctx)
+	if err != nil {
+		l.Errorf("logic module: %s", err.Error())
+
+		return err
 	}
 
 	// ** start application **

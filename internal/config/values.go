@@ -8,17 +8,23 @@ type Values struct {
 	// application
 	ApplicationName    string
 	ApplicationWebsite string
+	PrivacyURLs        map[string]interface{}
+	PrivacyVersion     string
+	RequireTermsAgreed bool
+	SigningKey         string
 	SoftwareVersion    string
+	TermsMasterVersion string
+	TermsURLs          map[string]interface{}
+	TermsVersion       string
 
 	// database
-	DBAddress       string
-	DBPort          int
-	DBUser          string
-	DBPassword      string
-	DBDatabase      string
-	DBTLSMode       string
-	DBTLSCACert     string
-	DBEncryptionKey string
+	DBAddress   string
+	DBPort      int
+	DBUser      string
+	DBPassword  string
+	DBDatabase  string
+	DBTLSMode   string
+	DBTLSCACert string
 
 	// redis
 	RedisAddress  string
@@ -30,12 +36,6 @@ type Values struct {
 	ServerHTTPBind   string
 
 	// matrix
-	RequireTermsAgreed bool
-	TermsMasterVersion string
-	PrivacyURLs        map[string]interface{}
-	PrivacyVersion     string
-	TermsURLs          map[string]interface{}
-	TermsVersion       string
 }
 
 // Defaults contains the default values.

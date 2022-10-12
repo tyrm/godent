@@ -72,26 +72,7 @@ func (logic *Logic) GetTerms(ctx context.Context) Terms {
 	_, tracer := logic.tracer.Start(ctx, "GetTerms", trace.WithSpanKind(trace.SpanKindInternal))
 	defer tracer.End()
 
-	terms := Terms{
-		MasterVersion: viper.GetString(config.Keys.TermsMasterVersion),
-		Policies:      map[string]TermsPolicies{},
-	}
-
-	privacyVersion := viper.GetString(config.Keys.PrivacyVersion)
-	if privacyVersion != "" {
-		privacyURLs := viper.GetStringMap(config.Keys.PrivacyURLs)
-		privacyURLs["version"] = privacyVersion
-		terms.Policies["privacy_policy"] = privacyURLs
-	}
-
-	termsVersion := viper.GetString(config.Keys.TermsVersion)
-	if termsVersion != "" {
-		termsURLs := viper.GetStringMap(config.Keys.TermsURLs)
-		termsURLs["version"] = termsVersion
-		terms.Policies["terms_of_service"] = termsURLs
-	}
-
-	return terms
+	return logic.terms
 }
 
 type TermsPolicies map[string]interface{}
@@ -168,4 +149,27 @@ func (t *Terms) IsFullyAgreed(userAccepts []string) bool {
 	}
 
 	return true
+}
+
+func genTerms() Terms {
+	terms := Terms{
+		MasterVersion: viper.GetString(config.Keys.TermsMasterVersion),
+		Policies:      map[string]TermsPolicies{},
+	}
+
+	privacyVersion := viper.GetString(config.Keys.PrivacyVersion)
+	if privacyVersion != "" {
+		privacyURLs := viper.GetStringMap(config.Keys.PrivacyURLs)
+		privacyURLs["version"] = privacyVersion
+		terms.Policies["privacy_policy"] = privacyURLs
+	}
+
+	termsVersion := viper.GetString(config.Keys.TermsVersion)
+	if termsVersion != "" {
+		termsURLs := viper.GetStringMap(config.Keys.TermsURLs)
+		termsURLs["version"] = termsVersion
+		terms.Policies["terms_of_service"] = termsURLs
+	}
+
+	return terms
 }
