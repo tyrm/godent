@@ -5,10 +5,11 @@ import (
 	gocipher "crypto/cipher"
 	"crypto/rand"
 	"errors"
-	"github.com/spf13/viper"
-	"github.com/tyrm/godent/internal/config"
 	"io"
 	"strings"
+
+	"github.com/spf13/viper"
+	"github.com/tyrm/godent/internal/config"
 )
 
 var errDataTooSmall = errors.New("data too small")

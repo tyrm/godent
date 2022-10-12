@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
-	"net/http"
 )
 
 func NewClient() *http.Client {

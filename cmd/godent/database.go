@@ -7,7 +7,7 @@ import (
 	"github.com/tyrm/godent/internal/config"
 )
 
-// databaseCommands returns the 'database' subcommand
+// databaseCommands returns the 'database' subcommand.
 func databaseCommands() *cobra.Command {
 	databaseCmd := &cobra.Command{
 		Use:   "database",

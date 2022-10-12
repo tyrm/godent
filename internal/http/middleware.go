@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/spf13/viper"
-	"github.com/tyrm/godent/internal/config"
 	"net/http"
 	"time"
+
+	"github.com/spf13/viper"
+	"github.com/tyrm/godent/internal/config"
 )
 
 // middleware sends http request metrics.

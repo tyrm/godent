@@ -2,11 +2,12 @@ package database
 
 import (
 	"context"
+
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/db/bun"
 )
 
-// Migrate runs database migrations
+// Migrate runs database migrations.
 var Migrate action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Migrate")
 

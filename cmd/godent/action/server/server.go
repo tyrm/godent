@@ -3,14 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/tyrm/godent/internal/http/account"
 	"github.com/tyrm/godent/internal/http/fc"
 	"github.com/tyrm/godent/internal/http/status"
 	"github.com/tyrm/godent/internal/http/terms"
 	"github.com/tyrm/godent/internal/logic"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/db/bun"

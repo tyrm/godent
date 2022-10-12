@@ -8,7 +8,9 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgconn"
+	"os"
+	"runtime"
+
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/spf13/viper"
@@ -17,14 +19,9 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bunotel"
-	"os"
-	"runtime"
 )
 
 const (
-	dbTypePostgres = "postgres"
-	dbTypeSqlite   = "sqlite"
-
 	dbTLSModeDisable = "disable"
 	dbTLSModeEnable  = "enable"
 	dbTLSModeRequire = "require"
@@ -155,35 +152,6 @@ func pgOptions() (*pgx.ConnConfig, error) {
 	cfg.RuntimeParams["application_name"] = viper.GetString(keys.ApplicationName)
 
 	return cfg, nil
-}
-
-// processPostgresError processes an error, replacing any postgres specific errors with our own error type
-func processError(err error) db.Error {
-	l := logger.WithField("func", "processError")
-
-	switch {
-	case err == nil:
-		return nil
-	case err == sql.ErrNoRows:
-		return db.ErrNoEntries
-	default:
-		// Attempt to cast as postgres
-		pgErr, ok := err.(*pgconn.PgError)
-		if !ok {
-			return err
-		}
-
-		l.Debugf("postgres error %s: %s", pgErr.Code, pgErr.Error())
-
-		// Handle supplied error code:
-		// (https://www.postgresql.org/docs/10/errcodes-appendix.html)
-		switch pgErr.Code {
-		case "23505" /* unique_violation */ :
-			return db.NewErrAlreadyExists(pgErr.Message)
-		default:
-			return err
-		}
-	}
 }
 
 // https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql

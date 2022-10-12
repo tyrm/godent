@@ -1,0 +1,27 @@
+package migrations
+
+import (
+	"context"
+
+	"github.com/uptrace/bun"
+)
+
+func init() {
+	// l := logger.WithField("migration", "20221011160349")
+
+	up := func(ctx context.Context, db *bun.DB) error {
+		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
+			return nil
+		})
+	}
+
+	down := func(ctx context.Context, db *bun.DB) error {
+		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
+			return nil
+		})
+	}
+
+	if err := Migrations.Register(up, down); err != nil {
+		panic(err)
+	}
+}

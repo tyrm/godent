@@ -1,8 +1,10 @@
 package fc
 
-func (c *Client) getHomeServer(serverName string) string {
+import "context"
+
+func (c *Client) getHomeServer(ctx context.Context, serverName string) string {
 	// try to get http
-	homeServer, err := c.fetchServerWellKnown(serverName)
+	homeServer, err := c.fetchServerWellKnown(ctx, serverName)
 	if err == nil {
 		return homeServer
 	}

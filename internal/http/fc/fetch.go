@@ -1,6 +1,7 @@
 package fc
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -13,14 +14,19 @@ type serverWellKnown struct {
 	MatrixServer string `json:"m.server"`
 }
 
-func (c *Client) fetchServerWellKnown(serverName string) (string, error) {
+func (c *Client) fetchServerWellKnown(ctx context.Context, serverName string) (string, error) {
 	wellKnowURL := url.URL{
 		Scheme: "https",
 		Host:   serverName,
 		Path:   "/.well-known/matrix/server",
 	}
 
-	resp, err := http.Get(wellKnowURL.String())
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, wellKnowURL.String(), nil)
+	if err != nil {
+		return "", fmt.Errorf("req: %s", err.Error())
+	}
+
+	resp, err := c.http.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("get: %s", err.Error())
 	}

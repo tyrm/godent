@@ -2,12 +2,13 @@ package logic
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/db"
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"go.opentelemetry.io/otel/trace"
-	"net/http"
 )
 
 func (logic *Logic) RequireAuth(w http.ResponseWriter, r *http.Request) (gdhttp.ErrCode, string) {
@@ -32,7 +33,6 @@ func (logic *Logic) RequireAuth(w http.ResponseWriter, r *http.Request) (gdhttp.
 	_ = account
 
 	if viper.GetBool(config.Keys.RequireTermsAgreed) {
-
 	}
 
 	return gdhttp.ErrCodeUnknown, ""
