@@ -1,0 +1,38 @@
+#############
+## GENERAL ##
+#############
+
+external-hostname: ""
+privacy-urls:
+  en:
+    name: "Privacy Policy"
+    url: "https://example.org/terms/privacy-1.2-en.html"
+privacy-version: "1.2"
+# require-terms-agreed: true
+signing-key: ""
+terms-master-version: "master_1_0"
+terms-urls:
+  en:
+    name: "Terms of Service"
+    url: "https://example.org/terms/terms-2.0-en.html"
+terms-version: "2.0"
+
+##############
+## DATABASE ##
+##############
+
+db-address: ""
+db-port: 5432
+db-user: ""
+db-password: ""
+db-database: ""
+db-tls-mode: "disable"
+db-tls-ca-cert: ""
+
+###########
+## REDIS ##
+###########
+
+redis-address: ""
+# redis-db: 0
+# redis-password: ""
