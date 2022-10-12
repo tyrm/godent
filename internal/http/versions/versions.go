@@ -17,7 +17,7 @@ type VersionGetResp struct {
 
 // VersionGetHandler gets the versions of the specification supported by the server.
 func (m *Module) VersionGetHandler(w http.ResponseWriter, r *http.Request) {
-	l := logger.WithField("func", "HomeGetHandler")
+	l := logger.WithField("func", "VersionGetHandler")
 
 	resp := VersionGetResp{
 		Versions: supportedVersions,
@@ -25,6 +25,6 @@ func (m *Module) VersionGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
-		l.Errorf("encoding version response: %s", err.Error())
+		l.Errorf("encoding response: %s", err.Error())
 	}
 }

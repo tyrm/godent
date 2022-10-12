@@ -8,21 +8,17 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"os"
-	"runtime"
-	"strings"
-
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/db"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect"
 	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/extra/bundebug"
-	"modernc.org/sqlite"
+	"github.com/uptrace/bun/extra/bunotel"
+	"os"
+	"runtime"
 )
 
 const (
@@ -35,136 +31,42 @@ const (
 	dbTLSModeUnset   = ""
 )
 
-// Bun represents a bun db connection and it's error handler.
-type Bun struct {
-	*bun.DB
-
-	errProc func(error) db.Error
-}
-
-// Client is a DB interface compatible client for Bun.
-type Client struct {
-	bun *Bun
-}
-
 // New creates a new bun database client.
 func New(ctx context.Context) (*Client, error) {
-	var newBun *Bun
-	var err error
-	dbType := strings.ToLower(viper.GetString(config.Keys.DBType))
-
-	switch dbType {
-	case dbTypePostgres:
-		newBun, err = pgConn(ctx)
-		if err != nil {
-			return nil, err
-		}
-	case dbTypeSqlite:
-		newBun, err = sqliteConn(ctx)
-		if err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
-	}
-
-	if strings.ToUpper(viper.GetString(config.Keys.LogLevel)) == "debug" || strings.ToUpper(viper.GetString(config.Keys.LogLevel)) == "trace" {
-		newBun.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
-	}
-
-	return &Client{
-		bun: newBun,
-	}, nil
-}
-
-func sqliteConn(ctx context.Context) (*Bun, error) {
-	l := logger.WithField("func", "sqliteConn")
-
-	// validate bun address has actually been set
-	dbAddress := viper.GetString(config.Keys.DBAddress)
-	if dbAddress == "" {
-		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", config.Keys.DBAddress)
-	}
-
-	// Drop anything fancy from DB address
-	dbAddress = strings.Split(dbAddress, "?")[0]
-	dbAddress = strings.TrimPrefix(dbAddress, "file:")
-
-	// Append our own SQLite preferences
-	dbAddress = "file:" + dbAddress + "?cache=shared"
-
-	// Open new DB instance
-	sqldb, err := sql.Open("sqlite", dbAddress)
-	if err != nil {
-		if errWithCode, ok := err.(*sqlite.Error); ok {
-			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
-		}
-
-		return nil, fmt.Errorf("could not open sqlite bun: %s", err.Error())
-	}
-
-	setConnectionValues(sqldb)
-
-	if dbAddress == "file::memory:?cache=shared" {
-		l.Warn("sqlite in-memory database should only be used for debugging")
-		// don't close connections on disconnect -- otherwise
-		// the SQLite database will be deleted when there
-		// are no active connections
-		sqldb.SetConnMaxLifetime(0)
-	}
-
-	conn, err := getErrConn(bun.NewDB(sqldb, sqlitedialect.New()))
-	if err != nil {
-		return nil, err
-	}
-
-	// ping to check the bun is there and listening
-	if err := conn.PingContext(ctx); err != nil {
-		if errWithCode, ok := err.(*sqlite.Error); ok {
-			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
-		}
-
-		return nil, fmt.Errorf("sqlite ping: %s", err.Error())
-	}
-
-	l.Info("connected to SQLITE database")
-
-	return conn, nil
-}
-
-func pgConn(ctx context.Context) (*Bun, error) {
 	l := logger.WithField("func", "pgConn")
 
-	opts, err := deriveBunDBPGOptions()
+	opts, err := pgOptions()
 	if err != nil {
-		return nil, fmt.Errorf("could not create bundb postgres options: %s", err.Error())
+		return nil, fmt.Errorf("could not doCreate bundb postgres options: %s", err)
 	}
 
 	sqldb := stdlib.OpenDB(*opts)
 
 	setConnectionValues(sqldb)
 
-	conn, err := getErrConn(bun.NewDB(sqldb, pgdialect.New()))
-	if err != nil {
-		return nil, err
-	}
+	conn := bun.NewDB(sqldb, pgdialect.New())
+	conn.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(viper.GetString(config.Keys.DBDatabase))))
 
 	// ping to check the bun is there and listening
 	if err := conn.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("postgres ping: %s", err)
 	}
-
 	l.Info("connected to POSTGRES database")
 
-	return conn, nil
+	return &Client{
+		db: conn,
+	}, nil
 }
 
-func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
-	keys := config.Keys
+// Client is a DB interface compatible client for Bun.
+type Client struct {
+	db *bun.DB
+}
 
-	if strings.ToUpper(viper.GetString(keys.DBType)) != db.TypePostgres {
-		return nil, fmt.Errorf("expected bun type of %s but got %s", db.TypePostgres, viper.GetString(keys.DBType))
-	}
+var _ db.DB = (*Client)(nil)
+
+func pgOptions() (*pgx.ConnConfig, error) {
+	keys := config.Keys
 
 	// these are all optional, the bun adapter figures out defaults
 	port := viper.GetInt(keys.DBPort)
@@ -175,14 +77,14 @@ func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 	// validate database
 	database := viper.GetString(keys.DBDatabase)
 	if database == "" {
-		return nil, ErrNoDatabaseSet
+		return nil, errors.New("no database set")
 	}
 
 	var tlsConfig *tls.Config
 	tlsMode := viper.GetString(keys.DBTLSMode)
 	switch tlsMode {
 	case dbTLSModeDisable, dbTLSModeUnset:
-		// nothing to do
+		break // nothing to do
 	case dbTLSModeEnable:
 		/* #nosec G402 */
 		tlsConfig = &tls.Config{
@@ -255,40 +157,38 @@ func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 	return cfg, nil
 }
 
+// processPostgresError processes an error, replacing any postgres specific errors with our own error type
+func processError(err error) db.Error {
+	l := logger.WithField("func", "processError")
+
+	switch {
+	case err == nil:
+		return nil
+	case err == sql.ErrNoRows:
+		return db.ErrNoEntries
+	default:
+		// Attempt to cast as postgres
+		pgErr, ok := err.(*pgconn.PgError)
+		if !ok {
+			return err
+		}
+
+		l.Debugf("postgres error %s: %s", pgErr.Code, pgErr.Error())
+
+		// Handle supplied error code:
+		// (https://www.postgresql.org/docs/10/errcodes-appendix.html)
+		switch pgErr.Code {
+		case "23505" /* unique_violation */ :
+			return db.NewErrAlreadyExists(pgErr.Message)
+		default:
+			return err
+		}
+	}
+}
+
 // https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
 func setConnectionValues(sqldb *sql.DB) {
 	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
 	sqldb.SetMaxOpenConns(maxOpenConns)
 	sqldb.SetMaxIdleConns(maxOpenConns)
-}
-
-func getErrConn(dbConn *bun.DB) (*Bun, error) {
-	var errProc func(error) db.Error
-	switch dbConn.Dialect().Name() {
-	case dialect.Invalid:
-		return nil, fmt.Errorf("invalid dialect")
-	case dialect.PG:
-		errProc = processPostgresError
-	case dialect.SQLite:
-		errProc = processSQLiteError
-	default:
-		return nil, fmt.Errorf("unknown dialect name: " + dbConn.Dialect().Name().String())
-	}
-
-	return &Bun{
-		errProc: errProc,
-		DB:      dbConn,
-	}, nil
-}
-
-// ProcessError replaces any known values with our own db.Error types.
-func (conn *Bun) ProcessError(err error) db.Error {
-	switch {
-	case err == nil:
-		return nil
-	case errors.Is(err, sql.ErrNoRows):
-		return db.ErrNoEntries
-	default:
-		return conn.errProc(err)
-	}
 }

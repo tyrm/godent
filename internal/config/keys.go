@@ -9,10 +9,8 @@ type KeyNames struct {
 	ApplicationName    string
 	ApplicationWebsite string
 	SoftwareVersion    string
-	TokenSalt          string
 
 	// database
-	DBType          string
 	DBAddress       string
 	DBPort          string
 	DBUser          string
@@ -20,7 +18,6 @@ type KeyNames struct {
 	DBDatabase      string
 	DBTLSMode       string
 	DBTLSCACert     string
-	DBLoadTestData  string
 	DBEncryptionKey string
 
 	// redis
@@ -29,7 +26,15 @@ type KeyNames struct {
 	RedisPassword string
 
 	// server
-	ServerHTTPBind string
+	ExternalHostname string
+	ServerHTTPBind   string
+
+	// matrix
+	RequireTermsAgreed string
+	PrivacyURLs        string
+	PrivacyVersion     string
+	TermsURLs          string
+	TermsVersion       string
 }
 
 // Keys contains the names of config keys.
@@ -41,10 +46,8 @@ var Keys = KeyNames{
 	ApplicationName:    "application-name",
 	ApplicationWebsite: "application-website",
 	SoftwareVersion:    "software-version", // Set at build
-	TokenSalt:          "token-salt",
 
 	// database
-	DBType:          "db-type",
 	DBAddress:       "db-address",
 	DBPort:          "db-port",
 	DBUser:          "db-user",
@@ -52,7 +55,6 @@ var Keys = KeyNames{
 	DBDatabase:      "db-database",
 	DBTLSMode:       "db-tls-mode",
 	DBTLSCACert:     "db-tls-ca-cert",
-	DBLoadTestData:  "test-data", // CLI only
 	DBEncryptionKey: "db-crypto-key",
 
 	// redis
@@ -61,5 +63,13 @@ var Keys = KeyNames{
 	RedisPassword: "redis-password",
 
 	// server
-	ServerHTTPBind: "http-bind",
+	ExternalHostname: "external-hostname",
+	ServerHTTPBind:   "http-bind",
+
+	// matrix
+	RequireTermsAgreed: "require-terms-agreed",
+	PrivacyURLs:        "privacy-urls",
+	PrivacyVersion:     "privacy-version",
+	TermsURLs:          "terms-urls",
+	TermsVersion:       "terms-version",
 }

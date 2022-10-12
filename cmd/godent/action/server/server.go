@@ -3,14 +3,17 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/tyrm/godent/internal/http/account"
+	"github.com/tyrm/godent/internal/http/fc"
 	"github.com/tyrm/godent/internal/http/status"
+	"github.com/tyrm/godent/internal/http/terms"
+	"github.com/tyrm/godent/internal/logic"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/db/bun"
-	"github.com/tyrm/godent/internal/db/memcache"
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/http/versions"
 	"github.com/tyrm/godent/internal/kv/redis"
@@ -28,19 +31,16 @@ var Start action.Action = func(ctx context.Context) error {
 
 		return err
 	}
-	l.Infof("creating db cache client")
-	cachedDBClient, err := memcache.New(ctx, dbClient)
-	if err != nil {
-		l.Errorf("db-cachemem: %s", err.Error())
-
-		return err
-	}
 	defer func() {
-		err := cachedDBClient.Close(ctx)
+		err := dbClient.Close(ctx)
 		if err != nil {
 			l.Errorf("closing db: %s", err.Error())
 		}
 	}()
+
+	// http clients
+	httpClient := gdhttp.NewClient()
+	federatingClient := fc.New(httpClient)
 
 	redisClient, err := redis.New(ctx)
 	if err != nil {
@@ -55,6 +55,18 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	// login
+	logicMod, err := logic.New(
+		ctx,
+		dbClient,
+		federatingClient,
+	)
+	if err != nil {
+		l.Errorf("logic: %s", err.Error())
+
+		return err
+	}
+
 	// create http server
 	l.Debug("creating http server")
 	httpServer, err := gdhttp.NewServer(ctx)
@@ -66,27 +78,45 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// create web modules
 	var webModules []gdhttp.Module
-	l.Infof("adding versions module")
-	httpVersions, err := versions.New(ctx)
+
+	l.Infof("adding accound module")
+	httpAccount, err := account.New(ctx, logicMod)
 	if err != nil {
-		l.Errorf("wellknown module: %s", err.Error())
+		l.Errorf("account module: %s", err.Error())
 
 		return err
 	}
-	webModules = append(webModules, httpVersions)
+	webModules = append(webModules, httpAccount)
 
 	l.Infof("adding status module")
 	httpStatus, err := status.New(ctx)
 	if err != nil {
-		l.Errorf("wellknown module: %s", err.Error())
+		l.Errorf("status module: %s", err.Error())
 
 		return err
 	}
 	webModules = append(webModules, httpStatus)
 
+	l.Infof("adding terms module")
+	httpTerms, err := terms.New(ctx, logicMod)
+	if err != nil {
+		l.Errorf("terms module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpTerms)
+
+	l.Infof("adding versions module")
+	httpVersions, err := versions.New(ctx)
+	if err != nil {
+		l.Errorf("versions module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpVersions)
+
 	// add modules to server
 	for _, mod := range webModules {
-		mod.SetServer(httpServer)
 		err := mod.Route(httpServer)
 		if err != nil {
 			l.Errorf("loading %s module: %s", mod.Name(), err.Error())

@@ -8,6 +8,8 @@ import (
 type ErrCode string
 
 const (
+	ErrCodeSuccess ErrCode = "M_SUCCESS"
+
 	ErrCodeEmailSendError      ErrCode = "M_EMAIL_SEND_ERROR"
 	ErrCodeInvalidAddress      ErrCode = "M_INVALID_ADDRESS"
 	ErrCodeInvalidEmail        ErrCode = "M_INVALID_EMAIL"
@@ -20,6 +22,7 @@ const (
 	ErrCodeSessionExpired      ErrCode = "M_SESSION_EXPIRED"
 	ErrCodeSessionNotValidated ErrCode = "M_SESSION_NOT_VALIDATED"
 	ErrCodeThreePIDInUse       ErrCode = "M_THREEPID_IN_USE"
+	ErrCodeUnauthorized        ErrCode = "M_UNAUTHORIZED"
 	ErrCodeUnknown             ErrCode = "M_UNKNOWN"
 	ErrCodeUnrecognized        ErrCode = "M_UNRECOGNIZED"
 )
@@ -37,6 +40,7 @@ var errCodeHTTPStatus = map[ErrCode]int{
 	ErrCodeSessionExpired:      http.StatusForbidden,
 	ErrCodeSessionNotValidated: http.StatusForbidden,
 	ErrCodeThreePIDInUse:       http.StatusConflict,
+	ErrCodeUnauthorized:        http.StatusUnauthorized,
 	ErrCodeUnknown:             http.StatusInternalServerError,
 	ErrCodeUnrecognized:        http.StatusBadRequest,
 }
@@ -46,8 +50,8 @@ type errResponse struct {
 	String string  `json:"error"`
 }
 
-func ReturnErrorPage(w http.ResponseWriter, code ErrCode, errStr string) {
-	l := logger.WithField("func", "ReturnErrorPage")
+func ReturnError(w http.ResponseWriter, code ErrCode, errStr string) {
+	l := logger.WithField("func", "ReturnError")
 
 	newErr := errResponse{
 		Code:   code,
