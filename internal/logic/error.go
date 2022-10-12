@@ -2,4 +2,7 @@ package logic
 
 import "errors"
 
-var ErrNotFound = errors.New("not found")
+var (
+	ErrInvalid  = errors.New("invalid")
+	ErrNotFound = errors.New("not found")
+)

@@ -1,11 +1,7 @@
 package logic
 
-import (
-	"crypto/ed25519"
-	"crypto/rand"
-)
+import "crypto/ed25519"
 
-func (logic *Logic) GenerateSigningKey() (*ed25519.PrivateKey, error) {
-	_, priv, err := ed25519.GenerateKey(rand.Reader)
-	return &priv, err
+type Key interface {
+	GenerateSigningKey() (ed25519.PrivateKey, error)
 }

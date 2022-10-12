@@ -1,4 +1,4 @@
-package status
+package hashdetail
 
 import (
 	"net/http"
@@ -9,8 +9,7 @@ import (
 
 // Route attaches routes to the web server.
 func (m *Module) Route(s *gdhttp.Server) error {
-	s.HandleFunc(path.V2, m.StatusGetHandler).Methods(http.MethodGet)
-	s.HandleFunc(path.V2, m.StatusOptionsHandler).Methods(http.MethodOptions)
+	s.HandleFunc(path.V2AccountRegister, m.RegisterPostHandler).Methods(http.MethodPost)
 
 	return nil
 }

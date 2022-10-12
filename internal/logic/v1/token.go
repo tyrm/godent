@@ -1,6 +1,7 @@
-package logic
+package v1
 
 import (
+	"github.com/tyrm/godent/internal/logic"
 	"net/http"
 	"strings"
 
@@ -18,5 +19,5 @@ func (*Logic) tokenFromRequest(r *http.Request) (string, error) {
 		return token, nil
 	}
 
-	return "", ErrNotFound
+	return "", logic.ErrNotFound
 }

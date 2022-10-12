@@ -18,6 +18,8 @@ privacy-urls:
   fr:
     name: "Politique de confidentialité"
     url: "https://example.org/somewhere/privacy-1.2-fr.html"
+signing-key: "ed25519 0 p8e6Ge/fgcMFPl7Wr3OBorDZDPJXi9u01fPDtpmBCzM"
+terms-master-version: "master_1_0"
 terms-version: "2.0"
 terms-urls:
   en:

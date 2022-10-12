@@ -1,4 +1,4 @@
-package logic
+package hashdetail
 
 import "github.com/tyrm/godent/internal/log"
 

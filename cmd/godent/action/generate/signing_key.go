@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/config"
-	"github.com/tyrm/godent/internal/logic"
+	"github.com/tyrm/godent/internal/logic/v1"
 )
 
 // SigningKey generates a new signing key.
 var SigningKey action.Action = func(ctx context.Context) error {
-	logicMod := logic.New(
+	logicMod := v1.New(
 		nil,
 		nil,
 	)

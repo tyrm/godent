@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/tyrm/godent/internal/fc"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,10 +13,9 @@ import (
 	"github.com/uptrace/uptrace-go/uptrace"
 
 	"github.com/tyrm/godent/internal/http/account"
-	"github.com/tyrm/godent/internal/http/fc"
 	"github.com/tyrm/godent/internal/http/status"
 	"github.com/tyrm/godent/internal/http/terms"
-	"github.com/tyrm/godent/internal/logic"
+	"github.com/tyrm/godent/internal/logic/v1"
 
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/db/bun"
@@ -67,7 +67,7 @@ var Start action.Action = func(ctx context.Context) error {
 	}()
 
 	// logic
-	logicMod := logic.New(
+	logicMod := v1.New(
 		dbClient,
 		federatingClient,
 	)
