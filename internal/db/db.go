@@ -4,6 +4,7 @@ import "context"
 
 // DB represents a database client.
 type DB interface {
+	AcceptedTermsURL
 	Account
 
 	// Close closes the db connections

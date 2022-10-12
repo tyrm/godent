@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
 )
@@ -11,7 +13,7 @@ import (
 // middleware sends http request metrics.
 func (*Server) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		started := time.Now()
+		start := time.Now()
 		l := logger.WithField("func", "middlewareMetrics")
 
 		wx := NewResponseWriter(w)
@@ -28,14 +30,16 @@ func (*Server) middleware(next http.Handler) http.Handler {
 		next.ServeHTTP(wx, r)
 
 		go func() {
-			l.Debugf("rendering %s took %d ms", r.URL.Path, time.Since(started))
+			l.Debugf("rendering %s took %d ms", r.URL.Path, time.Since(start).Milliseconds())
 		}()
 	})
 }
 
 // WrapInMiddlewares wraps an http.Handler in the server's middleware.
 func (s *Server) WrapInMiddlewares(h http.Handler) http.Handler {
-	return s.middleware(
-		h,
+	return otelmux.Middleware("godent")(
+		s.middleware(
+			h,
+		),
 	)
 }

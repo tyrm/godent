@@ -7,5 +7,6 @@ import (
 )
 
 type Account interface {
-	ReadAccountByToken(ctx context.Context, token string) (*models.Account, error)
+	ReadAccountByToken(ctx context.Context, token string) (*models.Account, Error)
+	UpdateAccount(ctx context.Context, account *models.Account) Error
 }

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type serverWellKnown struct {
@@ -15,6 +17,9 @@ type serverWellKnown struct {
 }
 
 func (c *Client) fetchServerWellKnown(ctx context.Context, serverName string) (string, error) {
+	ctx, tracer := c.tracer.Start(ctx, "fetchServerWellKnown", trace.WithSpanKind(trace.SpanKindInternal))
+	defer tracer.End()
+
 	wellKnowURL := url.URL{
 		Scheme: "https",
 		Host:   serverName,
@@ -46,7 +51,10 @@ func (c *Client) fetchServerWellKnown(ctx context.Context, serverName string) (s
 	return data.MatrixServer, nil
 }
 
-func (c *Client) fetchServerSRV(serverName string) (string, error) {
+func (c *Client) fetchServerSRV(ctx context.Context, serverName string) (string, error) {
+	ctx, tracer := c.tracer.Start(ctx, "fetchServerWellKnown", trace.WithSpanKind(trace.SpanKindInternal))
+	defer tracer.End()
+
 	_, srvs, err := net.LookupSRV("matrix", "tcp", serverName)
 	if err != nil {
 		return "", fmt.Errorf("lookup: %s", err.Error())

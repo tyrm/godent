@@ -7,6 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/spf13/viper"
+	"github.com/tyrm/godent/internal/config"
+	"github.com/uptrace/uptrace-go/uptrace"
+
 	"github.com/tyrm/godent/internal/http/account"
 	"github.com/tyrm/godent/internal/http/fc"
 	"github.com/tyrm/godent/internal/http/status"
@@ -25,6 +29,12 @@ var Start action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Start")
 
 	l.Infof("starting")
+
+	uptrace.ConfigureOpentelemetry(
+		uptrace.WithServiceName(viper.GetString(config.Keys.ApplicationName)),
+		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
+	)
+
 	l.Infof("creating db client")
 	dbClient, err := bun.New(ctx)
 	if err != nil {

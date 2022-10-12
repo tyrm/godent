@@ -33,6 +33,7 @@ type KeyNames struct {
 	RequireTermsAgreed string
 	PrivacyURLs        string
 	PrivacyVersion     string
+	TermsMasterVersion string
 	TermsURLs          string
 	TermsVersion       string
 }
@@ -70,6 +71,7 @@ var Keys = KeyNames{
 	RequireTermsAgreed: "require-terms-agreed",
 	PrivacyURLs:        "privacy-urls",
 	PrivacyVersion:     "privacy-version",
+	TermsMasterVersion: "terms-master-version",
 	TermsURLs:          "terms-urls",
 	TermsVersion:       "terms-version",
 }

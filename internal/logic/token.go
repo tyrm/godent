@@ -3,6 +3,8 @@ package logic
 import (
 	"net/http"
 	"strings"
+
+	gdhttp "github.com/tyrm/godent/internal/http"
 )
 
 func (*Logic) tokenFromRequest(r *http.Request) (string, error) {
@@ -11,10 +13,10 @@ func (*Logic) tokenFromRequest(r *http.Request) (string, error) {
 		return strings.TrimPrefix(token, "Bearer "), nil
 	}
 
-	token = r.URL.Query().Get(QueryAccessToken)
+	token = r.URL.Query().Get(gdhttp.QueryAccessToken)
 	if token != "" {
 		return token, nil
 	}
 
-	return "", ErrTokenNotFound
+	return "", ErrNotFound
 }

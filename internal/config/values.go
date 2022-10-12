@@ -31,6 +31,7 @@ type Values struct {
 
 	// matrix
 	RequireTermsAgreed bool
+	TermsMasterVersion string
 	PrivacyURLs        map[string]interface{}
 	PrivacyVersion     string
 	TermsURLs          map[string]interface{}
