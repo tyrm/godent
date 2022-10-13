@@ -7,6 +7,7 @@ const (
 	// account.
 
 	V2Account         = V2 + "/account"
+	V2AccountLogout   = V2Account + "/logout"
 	V2AccountRegister = V2Account + "/register"
 
 	// terms.

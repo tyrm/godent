@@ -14,6 +14,10 @@ import (
 	gdhttp "github.com/tyrm/godent/internal/http"
 )
 
+func (logic *Logic) DeleteToken(ctx context.Context, token *models.Token) error {
+	return logic.db.DeleteToken(ctx, token)
+}
+
 func (logic *Logic) IssueToken(ctx context.Context, mxID string) (*models.Token, error) {
 	ctx, tracer := logic.tracer.Start(ctx, "IssueToken", trace.WithSpanKind(trace.SpanKindInternal))
 	defer tracer.End()

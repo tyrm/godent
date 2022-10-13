@@ -8,4 +8,5 @@ import (
 
 type Token interface {
 	IssueToken(ctx context.Context, mxID string) (*models.Token, error)
+	DeleteToken(ctx context.Context, token *models.Token) error
 }
