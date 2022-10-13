@@ -1,6 +1,9 @@
 package http
 
 const (
+	HeaderCacheControl = "Cache-Control"
+	HeaderExpires      = "Expires"
+
 	QueryAccessToken      = "access_token"
 	QueryExpiresIn        = "expires_in"
 	QueryMatrixServerName = "matrix_server_name"

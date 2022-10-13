@@ -3,11 +3,11 @@ package models
 import "time"
 
 type ThreePIDTokenAuth struct {
-	ID        int64     `validate:"-" bun:"id,pk,autoincrement"`
-	CreatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
-	UpdatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
+	ID        int64     `bun:"id,pk,autoincrement"`
+	CreatedAt time.Time `bun:",nullzero,notnull"`
+	UpdatedAt time.Time `bun:",nullzero,notnull"`
 
-	ValidationSession int64  `validate:"-" bun:",nullzero,notnull"`
-	Token             string `validate:"-" bun:",nullzero,notnull"`
-	SendAttemptNumber int64  `validate:"-" bun:",nullzero,notnull"`
+	ValidationSession int64  `bun:",nullzero,notnull"`
+	Token             string `bun:",nullzero,notnull"`
+	SendAttemptNumber int64  `bun:",nullzero,notnull"`
 }

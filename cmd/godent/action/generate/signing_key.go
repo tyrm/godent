@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+
 	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/config"
-	"github.com/tyrm/godent/internal/logic/v1"
+	v1 "github.com/tyrm/godent/internal/logic/v1"
 )
 
 // SigningKey generates a new signing key.

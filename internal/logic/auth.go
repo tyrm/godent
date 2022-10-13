@@ -1,9 +1,10 @@
 package logic
 
 import (
+	"net/http"
+
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/models"
-	"net/http"
 )
 
 type Auth interface {

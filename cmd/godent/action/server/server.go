@@ -3,25 +3,23 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/tyrm/godent/internal/fc"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/spf13/viper"
+	"github.com/tyrm/godent/cmd/godent/action"
 	"github.com/tyrm/godent/internal/config"
-	"github.com/uptrace/uptrace-go/uptrace"
-
+	"github.com/tyrm/godent/internal/db/bun"
+	"github.com/tyrm/godent/internal/fc"
+	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/http/account"
 	"github.com/tyrm/godent/internal/http/status"
 	"github.com/tyrm/godent/internal/http/terms"
-	"github.com/tyrm/godent/internal/logic/v1"
-
-	"github.com/tyrm/godent/cmd/godent/action"
-	"github.com/tyrm/godent/internal/db/bun"
-	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/http/versions"
 	"github.com/tyrm/godent/internal/kv/redis"
+	logic "github.com/tyrm/godent/internal/logic/v1"
+	"github.com/uptrace/uptrace-go/uptrace"
 )
 
 // Start starts the server.
@@ -50,8 +48,8 @@ var Start action.Action = func(ctx context.Context) error {
 	}()
 
 	// http clients
-	httpClient := gdhttp.NewClient()
-	federatingClient := fc.New(httpClient)
+	httpRetryClient := gdhttp.NewRetryClient()
+	federatingClient := fc.New(httpRetryClient)
 
 	redisClient, err := redis.New(ctx)
 	if err != nil {
@@ -67,7 +65,7 @@ var Start action.Action = func(ctx context.Context) error {
 	}()
 
 	// logic
-	logicMod := v1.New(
+	logicMod := logic.New(
 		dbClient,
 		federatingClient,
 	)
@@ -85,7 +83,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []gdhttp.Module
 
 	l.Infof("adding accound module")
-	httpAccount, err := account.New(ctx, logicMod)
+	httpAccount, err := account.New(ctx, federatingClient, logicMod)
 	if err != nil {
 		l.Errorf("account module: %s", err.Error())
 

@@ -1,4 +1,4 @@
-package models
+package fc
 
 import "github.com/tyrm/godent/internal/log"
 

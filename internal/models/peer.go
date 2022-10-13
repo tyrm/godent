@@ -3,13 +3,13 @@ package models
 import "time"
 
 type Peer struct {
-	ID        int64     `validate:"-" bun:"id,pk,autoincrement"`
-	CreatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
-	UpdatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
+	ID        int64     `bun:"id,pk,autoincrement"`
+	CreatedAt time.Time `bun:",nullzero,notnull"`
+	UpdatedAt time.Time `bun:",nullzero,notnull"`
 
-	Name                string `validate:"-" bun:",nullzero,notnull"`
-	Port                int    `validate:"-" bun:",nullzero"`
-	LastSentVersion     int    `validate:"-" bun:",nullzero"`
-	LastPokeSucceededAt int    `validate:"-" bun:",nullzero"`
-	Active              bool   `validate:"-" bun:",notnull"`
+	Name                string `bun:",nullzero,notnull"`
+	Port                int    `bun:",nullzero"`
+	LastSentVersion     int    `bun:",nullzero"`
+	LastPokeSucceededAt int    `bun:",nullzero"`
+	Active              bool   `bun:",notnull"`
 }

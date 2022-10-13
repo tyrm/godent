@@ -4,14 +4,16 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/base64"
+	"strings"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/logic"
-	"strings"
 )
 
 func (logic *Logic) GenerateSigningKey() (ed25519.PrivateKey, error) {
 	_, priv, err := ed25519.GenerateKey(rand.Reader)
+
 	return priv, err
 }
 

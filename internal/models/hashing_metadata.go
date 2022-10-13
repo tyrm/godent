@@ -3,9 +3,9 @@ package models
 import "time"
 
 type HashingMetadata struct {
-	ID        int64     `validate:"-" bun:"id,pk,autoincrement"`
-	CreatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
-	UpdatedAt time.Time `validate:"-" bun:",nullzero,notnull"`
+	ID        int64     `bun:"id,pk,autoincrement"`
+	CreatedAt time.Time `bun:",nullzero,notnull"`
+	UpdatedAt time.Time `bun:",nullzero,notnull"`
 
-	LookupPepper string `validate:"-" bun:",nullzero"`
+	LookupPepper string `bun:",nullzero"`
 }

@@ -6,6 +6,7 @@ import "context"
 type DB interface {
 	AcceptedTermsURL
 	Account
+	Token
 
 	// Close closes the db connections
 	Close(ctx context.Context) Error

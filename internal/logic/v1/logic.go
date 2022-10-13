@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/ed25519"
 	"fmt"
+
 	"github.com/tyrm/godent/internal/fc"
+	"github.com/tyrm/godent/internal/logic"
 	"github.com/tyrm/godent/internal/models"
 	"go.opentelemetry.io/otel"
 
@@ -33,6 +35,8 @@ type Logic struct {
 	terms      models.Terms
 }
 
+var _ logic.Logic = (*Logic)(nil)
+
 func (logic *Logic) Start(_ context.Context) error {
 	l := logger.WithField("func", "Start")
 	l.Info("starting logic")
@@ -43,7 +47,7 @@ func (logic *Logic) Start(_ context.Context) error {
 	l.Debug("parsing private key")
 	pk, err := getPrivateKey()
 	if err != nil {
-		return fmt.Errorf("private key: %s")
+		return fmt.Errorf("private key: %s", err.Error())
 	}
 	logic.signingKey = pk
 
