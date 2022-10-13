@@ -6,6 +6,8 @@ import (
 )
 
 func init() {
+	l := logger.WithField("migration", "CHANGEME")
+
 	up := func(ctx context.Context, db *bun.DB) error {
 		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 			return nil

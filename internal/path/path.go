@@ -1,10 +1,20 @@
 package path
 
 const (
-	BasePath = "/" + PartMatrix + "/" + PartIdentity
-	V2Path   = BasePath + "/v2"
+	BasePath = "/_matrix/identity"
+	V2       = BasePath + "/v2"
+
+	// account.
+
+	V2Account         = V2 + "/account"
+	V2AccountLogout   = V2Account + "/logout"
+	V2AccountRegister = V2Account + "/register"
+
+	// terms.
+
+	V2Terms = V2 + "/terms"
 
 	// versions.
 
-	Versions = BasePath + "/" + PartVersions
+	Versions = BasePath + "/versions"
 )

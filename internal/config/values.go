@@ -8,20 +8,23 @@ type Values struct {
 	// application
 	ApplicationName    string
 	ApplicationWebsite string
+	PrivacyURLs        map[string]interface{}
+	PrivacyVersion     string
+	RequireTermsAgreed bool
+	SigningKey         string
 	SoftwareVersion    string
-	TokenSalt          string
+	TermsMasterVersion string
+	TermsURLs          map[string]interface{}
+	TermsVersion       string
 
 	// database
-	DBType          string
-	DBAddress       string
-	DBPort          int
-	DBUser          string
-	DBPassword      string
-	DBDatabase      string
-	DBTLSMode       string
-	DBTLSCACert     string
-	DBLoadTestData  bool
-	DBEncryptionKey string
+	DBAddress   string
+	DBPort      int
+	DBUser      string
+	DBPassword  string
+	DBDatabase  string
+	DBTLSMode   string
+	DBTLSCACert string
 
 	// redis
 	RedisAddress  string
@@ -29,7 +32,10 @@ type Values struct {
 	RedisPassword string
 
 	// server
-	ServerHTTPBind string
+	ExternalHostname string
+	ServerHTTPBind   string
+
+	// matrix
 }
 
 // Defaults contains the default values.
@@ -42,15 +48,13 @@ var Defaults = Values{
 	ApplicationWebsite: "https://github.com/tyrm/godent",
 
 	// database
-	DBType:         "postgres",
-	DBAddress:      "localhost",
-	DBPort:         5432,
-	DBUser:         "godent",
-	DBPassword:     "godent",
-	DBDatabase:     "godent",
-	DBTLSMode:      "disable",
-	DBTLSCACert:    "",
-	DBLoadTestData: false,
+	DBAddress:   "localhost",
+	DBPort:      5432,
+	DBUser:      "godent",
+	DBPassword:  "godent",
+	DBDatabase:  "godent",
+	DBTLSMode:   "disable",
+	DBTLSCACert: "",
 
 	// redis
 	RedisAddress:  "localhost:6379",
@@ -59,4 +63,7 @@ var Defaults = Values{
 
 	// server
 	ServerHTTPBind: ":5000",
+
+	// matrix
+	RequireTermsAgreed: true,
 }

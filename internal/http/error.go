@@ -2,56 +2,21 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
-
-type ErrCode string
-
-const (
-	ErrCodeEmailSendError      ErrCode = "M_EMAIL_SEND_ERROR"
-	ErrCodeInvalidAddress      ErrCode = "M_INVALID_ADDRESS"
-	ErrCodeInvalidEmail        ErrCode = "M_INVALID_EMAIL"
-	ErrCodeInvalidParam        ErrCode = "M_INVALID_PARAM"
-	ErrCodeMethodNotAllowed    ErrCode = "M_METHOD_NOT_ALLOWED" // not part of spec
-	ErrCodeMissingParams       ErrCode = "M_MISSING_PARAMS"
-	ErrCodeNoValidSession      ErrCode = "M_NO_VALID_SESSION"
-	ErrCodeNotFound            ErrCode = "M_NOT_FOUND"
-	ErrCodeSendError           ErrCode = "M_SEND_ERROR"
-	ErrCodeSessionExpired      ErrCode = "M_SESSION_EXPIRED"
-	ErrCodeSessionNotValidated ErrCode = "M_SESSION_NOT_VALIDATED"
-	ErrCodeThreePIDInUse       ErrCode = "M_THREEPID_IN_USE"
-	ErrCodeUnknown             ErrCode = "M_UNKNOWN"
-	ErrCodeUnrecognized        ErrCode = "M_UNRECOGNIZED"
-)
-
-var errCodeHTTPStatus = map[ErrCode]int{
-	ErrCodeEmailSendError:      http.StatusInternalServerError,
-	ErrCodeInvalidAddress:      http.StatusBadRequest,
-	ErrCodeInvalidEmail:        http.StatusBadRequest,
-	ErrCodeInvalidParam:        http.StatusBadRequest,
-	ErrCodeMissingParams:       http.StatusBadRequest,
-	ErrCodeNoValidSession:      http.StatusForbidden,
-	ErrCodeMethodNotAllowed:    http.StatusMethodNotAllowed,
-	ErrCodeNotFound:            http.StatusNotFound,
-	ErrCodeSendError:           http.StatusInternalServerError,
-	ErrCodeSessionExpired:      http.StatusForbidden,
-	ErrCodeSessionNotValidated: http.StatusForbidden,
-	ErrCodeThreePIDInUse:       http.StatusConflict,
-	ErrCodeUnknown:             http.StatusInternalServerError,
-	ErrCodeUnrecognized:        http.StatusBadRequest,
-}
 
 type errResponse struct {
 	Code   ErrCode `json:"errcode"`
 	String string  `json:"error"`
 }
 
-func ReturnErrorPage(w http.ResponseWriter, code ErrCode, errStr string) {
-	l := logger.WithField("func", "ReturnErrorPage")
+func ReturnError(w http.ResponseWriter, code ErrCode, errStr string, vars ...interface{}) {
+	l := logger.WithField("func", "ReturnError")
 
 	newErr := errResponse{
 		Code:   code,
-		String: errStr,
+		String: fmt.Sprintf(errStr, vars...),
 	}
 
 	httpStatus, ok := errCodeHTTPStatus[code]

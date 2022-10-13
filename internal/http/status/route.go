@@ -9,7 +9,8 @@ import (
 
 // Route attaches routes to the web server.
 func (m *Module) Route(s *gdhttp.Server) error {
-	s.HandleFunc(path.V2Path, m.StatusGetHandler).Methods(http.MethodGet)
+	s.HandleFunc(path.V2, m.StatusGetHandler).Methods(http.MethodGet)
+	s.HandleFunc(path.V2, m.StatusOptionsHandler).Methods(http.MethodOptions)
 
 	return nil
 }

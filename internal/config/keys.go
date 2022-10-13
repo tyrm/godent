@@ -8,20 +8,23 @@ type KeyNames struct {
 	// application
 	ApplicationName    string
 	ApplicationWebsite string
+	PrivacyURLs        string
+	PrivacyVersion     string
+	RequireTermsAgreed string
 	SoftwareVersion    string
-	TokenSalt          string
+	SigningKey         string
+	TermsMasterVersion string
+	TermsURLs          string
+	TermsVersion       string
 
 	// database
-	DBType          string
-	DBAddress       string
-	DBPort          string
-	DBUser          string
-	DBPassword      string
-	DBDatabase      string
-	DBTLSMode       string
-	DBTLSCACert     string
-	DBLoadTestData  string
-	DBEncryptionKey string
+	DBAddress   string
+	DBPort      string
+	DBUser      string
+	DBPassword  string
+	DBDatabase  string
+	DBTLSMode   string
+	DBTLSCACert string
 
 	// redis
 	RedisAddress  string
@@ -29,7 +32,8 @@ type KeyNames struct {
 	RedisPassword string
 
 	// server
-	ServerHTTPBind string
+	ExternalHostname string
+	ServerHTTPBind   string
 }
 
 // Keys contains the names of config keys.
@@ -40,20 +44,23 @@ var Keys = KeyNames{
 	// application
 	ApplicationName:    "application-name",
 	ApplicationWebsite: "application-website",
+	PrivacyURLs:        "privacy-urls",
+	PrivacyVersion:     "privacy-version",
+	RequireTermsAgreed: "require-terms-agreed",
+	SigningKey:         "signing-key",
 	SoftwareVersion:    "software-version", // Set at build
-	TokenSalt:          "token-salt",
+	TermsMasterVersion: "terms-master-version",
+	TermsURLs:          "terms-urls",
+	TermsVersion:       "terms-version",
 
 	// database
-	DBType:          "db-type",
-	DBAddress:       "db-address",
-	DBPort:          "db-port",
-	DBUser:          "db-user",
-	DBPassword:      "db-password",
-	DBDatabase:      "db-database",
-	DBTLSMode:       "db-tls-mode",
-	DBTLSCACert:     "db-tls-ca-cert",
-	DBLoadTestData:  "test-data", // CLI only
-	DBEncryptionKey: "db-crypto-key",
+	DBAddress:   "db-address",
+	DBPort:      "db-port",
+	DBUser:      "db-user",
+	DBPassword:  "db-password",
+	DBDatabase:  "db-database",
+	DBTLSMode:   "db-tls-mode",
+	DBTLSCACert: "db-tls-ca-cert",
 
 	// redis
 	RedisAddress:  "redis-address",
@@ -61,5 +68,6 @@ var Keys = KeyNames{
 	RedisPassword: "redis-password",
 
 	// server
-	ServerHTTPBind: "http-bind",
+	ExternalHostname: "external-hostname",
+	ServerHTTPBind:   "http-bind",
 }

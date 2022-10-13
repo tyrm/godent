@@ -3,17 +3,23 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/tyrm/godent/internal/http/status"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/spf13/viper"
 	"github.com/tyrm/godent/cmd/godent/action"
+	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/db/bun"
-	"github.com/tyrm/godent/internal/db/memcache"
+	"github.com/tyrm/godent/internal/fc"
 	gdhttp "github.com/tyrm/godent/internal/http"
+	"github.com/tyrm/godent/internal/http/account"
+	"github.com/tyrm/godent/internal/http/status"
+	"github.com/tyrm/godent/internal/http/terms"
 	"github.com/tyrm/godent/internal/http/versions"
 	"github.com/tyrm/godent/internal/kv/redis"
+	logic "github.com/tyrm/godent/internal/logic/v1"
+	"github.com/uptrace/uptrace-go/uptrace"
 )
 
 // Start starts the server.
@@ -21,6 +27,12 @@ var Start action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Start")
 
 	l.Infof("starting")
+
+	uptrace.ConfigureOpentelemetry(
+		uptrace.WithServiceName(viper.GetString(config.Keys.ApplicationName)),
+		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
+	)
+
 	l.Infof("creating db client")
 	dbClient, err := bun.New(ctx)
 	if err != nil {
@@ -28,19 +40,16 @@ var Start action.Action = func(ctx context.Context) error {
 
 		return err
 	}
-	l.Infof("creating db cache client")
-	cachedDBClient, err := memcache.New(ctx, dbClient)
-	if err != nil {
-		l.Errorf("db-cachemem: %s", err.Error())
-
-		return err
-	}
 	defer func() {
-		err := cachedDBClient.Close(ctx)
+		err := dbClient.Close(ctx)
 		if err != nil {
 			l.Errorf("closing db: %s", err.Error())
 		}
 	}()
+
+	// http clients
+	httpRetryClient := gdhttp.NewRetryClient()
+	federatingClient := fc.New(httpRetryClient)
 
 	redisClient, err := redis.New(ctx)
 	if err != nil {
@@ -55,6 +64,12 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	// logic
+	logicMod := logic.New(
+		dbClient,
+		federatingClient,
+	)
+
 	// create http server
 	l.Debug("creating http server")
 	httpServer, err := gdhttp.NewServer(ctx)
@@ -66,33 +81,59 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// create web modules
 	var webModules []gdhttp.Module
-	l.Infof("adding versions module")
-	httpVersions, err := versions.New(ctx)
+
+	l.Infof("adding accound module")
+	httpAccount, err := account.New(ctx, federatingClient, logicMod)
 	if err != nil {
-		l.Errorf("wellknown module: %s", err.Error())
+		l.Errorf("account module: %s", err.Error())
 
 		return err
 	}
-	webModules = append(webModules, httpVersions)
+	webModules = append(webModules, httpAccount)
 
 	l.Infof("adding status module")
 	httpStatus, err := status.New(ctx)
 	if err != nil {
-		l.Errorf("wellknown module: %s", err.Error())
+		l.Errorf("status module: %s", err.Error())
 
 		return err
 	}
 	webModules = append(webModules, httpStatus)
 
+	l.Infof("adding terms module")
+	httpTerms, err := terms.New(ctx, logicMod)
+	if err != nil {
+		l.Errorf("terms module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpTerms)
+
+	l.Infof("adding versions module")
+	httpVersions, err := versions.New(ctx)
+	if err != nil {
+		l.Errorf("versions module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpVersions)
+
 	// add modules to server
 	for _, mod := range webModules {
-		mod.SetServer(httpServer)
 		err := mod.Route(httpServer)
 		if err != nil {
 			l.Errorf("loading %s module: %s", mod.Name(), err.Error())
 
 			return err
 		}
+	}
+
+	// start logic module
+	err = logicMod.Start(ctx)
+	if err != nil {
+		l.Errorf("logic module: %s", err.Error())
+
+		return err
 	}
 
 	// ** start application **

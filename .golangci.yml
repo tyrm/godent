@@ -4,7 +4,6 @@ linters:
     - godot
     - godox
     - gofmt
-    - gofumpt
     - goimports
     - ireturn
     - misspell

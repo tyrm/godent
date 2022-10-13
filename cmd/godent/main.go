@@ -50,6 +50,8 @@ func main() {
 	}
 
 	// add commands
+	rootCmd.AddCommand(databaseCommands())
+	rootCmd.AddCommand(generateCommands())
 	rootCmd.AddCommand(serverCommands())
 
 	err = rootCmd.Execute()

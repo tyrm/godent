@@ -11,6 +11,9 @@ func (m *Module) StatusGetHandler(w http.ResponseWriter, _ *http.Request) {
 
 	err := json.NewEncoder(w).Encode(&struct{}{})
 	if err != nil {
-		l.Errorf("encoding version response: %s", err.Error())
+		l.Errorf("encoding response: %s", err.Error())
 	}
 }
+
+// StatusOptionsHandler returns headers.
+func (m *Module) StatusOptionsHandler(_ http.ResponseWriter, _ *http.Request) {}
