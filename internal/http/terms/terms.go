@@ -29,7 +29,7 @@ func (m *Module) TermsPostHandler(w http.ResponseWriter, r *http.Request) {
 	l := logger.WithField("func", "TermsPostHandler")
 	ctx := r.Context()
 
-	account, errCode, errString := m.logic.RequireAuth(r)
+	token, errCode, errString := m.logic.RequireAuth(r)
 	if errCode != gdhttp.ErrCodeSuccess {
 		gdhttp.ReturnError(w, errCode, errString)
 
@@ -64,7 +64,7 @@ func (m *Module) TermsPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = m.logic.AddAgreedTerms(ctx, account, terms.GetURLs())
+	err = m.logic.AddAgreedTerms(ctx, token.Account, terms.GetURLs())
 	if len(unknown) > 0 {
 		l.Errorf("add agreed: %s", err.Error())
 		gdhttp.ReturnError(w, gdhttp.ErrCodeUnknown, "Database Error")

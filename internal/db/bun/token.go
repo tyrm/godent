@@ -2,6 +2,7 @@ package bun
 
 import (
 	"context"
+	"github.com/uptrace/bun"
 	"time"
 
 	"github.com/tyrm/godent/internal/db"
@@ -22,6 +23,18 @@ func (c *Client) CreateToken(ctx context.Context, token *models.Token) db.Error 
 	return nil
 }
 
+func (c *Client) ReadTokenByToken(ctx context.Context, t string) (*models.Token, db.Error) {
+	token := new(models.Token)
+	query := newTokenQ(c.db, token).
+		Where("token.token = ?", t)
+
+	if err := query.Scan(ctx); err != nil {
+		return nil, processError(err)
+	}
+
+	return token, nil
+}
+
 func (c *Client) DeleteToken(ctx context.Context, token *models.Token) db.Error {
 	query := c.db.NewDelete().
 		Model(&token).
@@ -32,4 +45,11 @@ func (c *Client) DeleteToken(ctx context.Context, token *models.Token) db.Error 
 	}
 
 	return nil
+}
+
+func newTokenQ(c bun.IDB, token *models.Token) *bun.SelectQuery {
+	return c.
+		NewSelect().
+		Model(token).
+		Relation("Account")
 }

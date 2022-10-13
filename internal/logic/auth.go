@@ -8,5 +8,5 @@ import (
 )
 
 type Auth interface {
-	RequireAuth(r *http.Request) (*models.Account, gdhttp.ErrCode, string)
+	RequireAuth(r *http.Request) (*models.Token, gdhttp.ErrCode, string)
 }

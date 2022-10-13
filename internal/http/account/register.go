@@ -64,8 +64,7 @@ func (m *Module) registerPostHandler(w http.ResponseWriter, r *http.Request) {
 		AccessToken: token.Token,
 		Token:       token.Token,
 	}
-	err = json.NewEncoder(w).Encode(&resp)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(&resp); err != nil {
 		l.Errorf("encoding response: %s", err.Error())
 	}
 }
