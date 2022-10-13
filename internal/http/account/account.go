@@ -2,8 +2,9 @@ package account
 
 import (
 	"encoding/json"
-	gdhttp "github.com/tyrm/godent/internal/http"
 	"net/http"
+
+	gdhttp "github.com/tyrm/godent/internal/http"
 )
 
 type accountGetResponse struct {
