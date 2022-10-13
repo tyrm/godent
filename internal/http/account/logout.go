@@ -2,8 +2,9 @@ package account
 
 import (
 	"encoding/json"
-	gdhttp "github.com/tyrm/godent/internal/http"
 	"net/http"
+
+	gdhttp "github.com/tyrm/godent/internal/http"
 )
 
 func (m *Module) logoutPostHandler(w http.ResponseWriter, r *http.Request) {
