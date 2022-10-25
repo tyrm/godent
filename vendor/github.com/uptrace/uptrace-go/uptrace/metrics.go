@@ -19,6 +19,7 @@ import (
 func configureMetrics(ctx context.Context, client *client, cfg *config) {
 	exp, err := otlpmetricClient(ctx, client.dsn)
 	if err != nil {
+		internal.Logger.Printf("otlpmetricClient failed: %s", err)
 		return
 	}
 
@@ -63,10 +64,10 @@ func otlpmetricClient(ctx context.Context, dsn *DSN) (metric.Exporter, error) {
 
 func statelessTemporalitySelector(kind view.InstrumentKind) metricdata.Temporality {
 	return metricdata.CumulativeTemporality
-	switch kind {
-	case view.SyncCounter, view.AsyncCounter, view.SyncHistogram:
-		return metricdata.DeltaTemporality
-	default:
-		return metricdata.CumulativeTemporality
-	}
+	// switch kind {
+	// case view.SyncCounter, view.AsyncCounter, view.SyncHistogram:
+	// 	return metricdata.DeltaTemporality
+	// default:
+	// 	return metricdata.CumulativeTemporality
+	// }
 }
