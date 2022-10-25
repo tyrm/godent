@@ -9,7 +9,7 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/sirupsen/logrus v1.9.0
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
 	github.com/uptrace/bun v1.1.8
