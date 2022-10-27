@@ -17,6 +17,9 @@ type KeyNames struct {
 	TermsURLs          string
 	TermsVersion       string
 
+	// cache
+	CacheStore string
+
 	// database
 	DBAddress   string
 	DBPort      string
@@ -52,6 +55,9 @@ var Keys = KeyNames{
 	TermsMasterVersion: "terms-master-version",
 	TermsURLs:          "terms-urls",
 	TermsVersion:       "terms-version",
+
+	// cache
+	CacheStore: "cache-store",
 
 	// database
 	DBAddress:   "db-address",

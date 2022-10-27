@@ -13,11 +13,11 @@ type openidUserinfo struct {
 	Sub string `json:"sub"`
 }
 
-func (c *Client) OpenidUserinfo(ctx context.Context, matrixServer, AccessToken string) (*openidUserinfo, error) {
+func (c *Client) OpenidUserinfo(ctx context.Context, matrixServer, accessToken string) (*openidUserinfo, error) {
 	homeServer := c.getHomeServer(ctx, matrixServer)
 
 	query := url.Values{}
-	query.Set(gdhttp.QueryAccessToken, AccessToken)
+	query.Set(gdhttp.QueryAccessToken, accessToken)
 
 	userinfoURL := url.URL{
 		Scheme:   "https",
@@ -35,6 +35,7 @@ func (c *Client) OpenidUserinfo(ctx context.Context, matrixServer, AccessToken s
 	}
 
 	var data openidUserinfo
+	defer resp.Body.Close()
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return nil, fmt.Errorf("json: %s", err.Error())

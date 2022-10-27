@@ -1,10 +1,17 @@
 ---
 linters:
   enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - durationcheck
+    - gocritic
     - godot
     - godox
     - gofmt
     - goimports
+    - gosimple
+    - govet
     - ireturn
     - misspell
     - nilerr
@@ -12,6 +19,8 @@ linters:
     - nlreturn
     - noctx
     - nonamedreturns
+    - staticcheck
+    - stylecheck
 
 linters-settings:
   ireturn:

@@ -7,6 +7,7 @@ const (
 	QueryAccessToken      = "access_token"
 	QueryExpiresIn        = "expires_in"
 	QueryMatrixServerName = "matrix_server_name"
+	QueryPublicKey        = "public_key"
 	QueryTokenType        = "token_type"
 
 	ResponseDatabaseError  = "Database Error"

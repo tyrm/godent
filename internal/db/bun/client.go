@@ -30,7 +30,7 @@ const (
 
 // New creates a new bun database client.
 func New(ctx context.Context) (*Client, error) {
-	l := logger.WithField("func", "pgConn")
+	l := logger.WithField("func", "New")
 
 	opts, err := pgOptions()
 	if err != nil {

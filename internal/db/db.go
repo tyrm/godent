@@ -6,6 +6,7 @@ import "context"
 type DB interface {
 	AcceptedTermsURL
 	Account
+	EphemeralPublicKey
 	Token
 
 	// Close closes the db connections
