@@ -183,7 +183,7 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.36.3
+# go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.36.4
 ## explicit; go 1.18
 go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux
 # go.opentelemetry.io/contrib/instrumentation/runtime v0.36.4
