@@ -26,7 +26,7 @@ type Client struct {
 	tracer trace.Tracer
 
 	// caches
-	//homeServerCache *ttlcache.Cache[string, string]
+	// homeServerCache *ttlcache.Cache[string, string]
 }
 
 func (c *Client) get(ctx context.Context, u string) (*http.Response, error) {

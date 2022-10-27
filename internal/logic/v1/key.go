@@ -29,7 +29,7 @@ func (logic *Logic) GetPublicKey() (string, error) {
 }
 
 func (logic *Logic) IsEphemeralPubKeyValid(ctx context.Context, pubKey string) (bool, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

@@ -1,11 +1,13 @@
 ---
 linters:
   enable:
+    - gocritic
     - godot
     - godox
     - gofmt
     - goimports
     - gosimple
+    - govet
     - ireturn
     - misspell
     - nilerr
@@ -13,6 +15,7 @@ linters:
     - nlreturn
     - noctx
     - nonamedreturns
+    - staticcheck
 
 linters-settings:
   ireturn:
