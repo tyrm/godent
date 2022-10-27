@@ -35,6 +35,7 @@ func (c *Client) OpenidUserinfo(ctx context.Context, matrixServer, accessToken s
 	}
 
 	var data openidUserinfo
+	defer resp.Body.Close()
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return nil, fmt.Errorf("json: %s", err.Error())

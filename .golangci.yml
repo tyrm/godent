@@ -1,6 +1,10 @@
 ---
 linters:
   enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - durationcheck
     - gocritic
     - godot
     - godox
@@ -16,6 +20,7 @@ linters:
     - noctx
     - nonamedreturns
     - staticcheck
+    - stylecheck
 
 linters-settings:
   ireturn:
