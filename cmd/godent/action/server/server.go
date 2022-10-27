@@ -3,14 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/tyrm/godent/internal/cache"
-	"github.com/tyrm/godent/internal/cache/memory"
-	"github.com/tyrm/godent/internal/http/pubkey"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/sirupsen/logrus"
+	"github.com/tyrm/godent/internal/cache"
+	"github.com/tyrm/godent/internal/cache/memory"
+	"github.com/tyrm/godent/internal/http/pubkey"
 
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/cmd/godent/action"

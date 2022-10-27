@@ -1,10 +1,11 @@
 package server
 
 import (
+	"reflect"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
-	"reflect"
 )
 
 func logConfig(l *logrus.Entry) {

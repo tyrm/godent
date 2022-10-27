@@ -10,7 +10,7 @@ const (
 	V2AccountLogout   = V2Account + "/logout"
 	V2AccountRegister = V2Account + "/register"
 
-	// pubkey
+	// pubkey.
 
 	V2Pubkey                 = V2 + "/pubkey"
 	V2PubkeyEphemeralIsvalid = V2Pubkey + "/ephemeral/isvalid"

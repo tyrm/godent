@@ -2,6 +2,7 @@ package pubkey
 
 import (
 	"context"
+
 	"github.com/tyrm/godent/internal/logic"
 )
 

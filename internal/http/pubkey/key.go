@@ -2,10 +2,11 @@ package pubkey
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	gdhttp "github.com/tyrm/godent/internal/http"
 	"github.com/tyrm/godent/internal/path"
-	"net/http"
 )
 
 type keyGetResponse struct {

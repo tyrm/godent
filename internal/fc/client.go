@@ -2,8 +2,9 @@ package fc
 
 import (
 	"context"
-	"github.com/tyrm/godent/internal/cache"
 	"net/http"
+
+	"github.com/tyrm/godent/internal/cache"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"

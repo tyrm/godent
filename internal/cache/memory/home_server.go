@@ -2,8 +2,9 @@ package memory
 
 import (
 	"context"
-	"github.com/tyrm/godent/internal/cache"
 	"time"
+
+	"github.com/tyrm/godent/internal/cache"
 )
 
 func (c Cache) DeleteHomeServer(_ context.Context, domain string) error {

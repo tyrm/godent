@@ -3,6 +3,7 @@ package fc
 import (
 	"context"
 	"errors"
+
 	"github.com/tyrm/godent/internal/cache"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -33,7 +34,7 @@ func (c *Client) getHomeServer(ctx context.Context, serverName string) string {
 	}
 
 	// try to get dns
-	homeServer, cachePeriod, err = c.fetchServerSRV(ctx, serverName)
+	homeServer, _, err = c.fetchServerSRV(ctx, serverName)
 	if err == nil {
 		cerr := c.cache.SetHomeServer(ctx, serverName, homeServer, dnsDefaultCachePeriod)
 		if cerr != nil {

@@ -5,6 +5,7 @@ linters:
     - godox
     - gofmt
     - goimports
+    - gosimple
     - ireturn
     - misspell
     - nilerr
