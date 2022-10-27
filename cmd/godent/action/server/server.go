@@ -3,8 +3,13 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"github.com/tyrm/godent/internal/cache"
+	"github.com/tyrm/godent/internal/cache/memory"
+	"github.com/tyrm/godent/internal/http/pubkey"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/spf13/viper"
@@ -26,6 +31,10 @@ import (
 var Start action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Start")
 
+	if logrus.GetLevel() == logrus.TraceLevel {
+		logConfig(l)
+	}
+
 	l.Infof("starting")
 
 	uptrace.ConfigureOpentelemetry(
@@ -33,7 +42,7 @@ var Start action.Action = func(ctx context.Context) error {
 		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
 	)
 
-	l.Infof("creating db client")
+	l.Info("creating db client")
 	dbClient, err := bun.New(ctx)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
@@ -47,10 +56,7 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
-	// http clients
-	httpRetryClient := gdhttp.NewRetryClient()
-	federatingClient := fc.New(httpRetryClient)
-
+	l.Info("creating redis client")
 	redisClient, err := redis.New(ctx)
 	if err != nil {
 		l.Errorf("redis: %s", err.Error())
@@ -63,6 +69,36 @@ var Start action.Action = func(ctx context.Context) error {
 			l.Errorf("closing redis: %s", err.Error())
 		}
 	}()
+
+	// cache
+	var cacher cache.Cache
+	switch strings.ToLower(viper.GetString(config.Keys.CacheStore)) {
+	case config.CacheStoreMemory:
+		l.Info("creating memory cache")
+		memoryCache, err := memory.New(ctx)
+		if err != nil {
+			l.Errorf("memory cacher: %s", err.Error())
+
+			return err
+		}
+
+		cacher = memoryCache
+	default:
+		l.Warnf("unknowm cacher type '%s', defaulting to memory cache", viper.GetString(config.Keys.CacheStore))
+		memoryCache, err := memory.New(ctx)
+		if err != nil {
+			l.Errorf("memory cacher: %s", err.Error())
+
+			return err
+		}
+
+		cacher = memoryCache
+
+	}
+
+	// http clients
+	httpRetryClient := gdhttp.NewRetryClient()
+	federatingClient := fc.New(cacher, httpRetryClient)
 
 	// logic
 	logicMod := logic.New(
@@ -82,7 +118,7 @@ var Start action.Action = func(ctx context.Context) error {
 	// create web modules
 	var webModules []gdhttp.Module
 
-	l.Infof("adding accound module")
+	l.Info("adding accound module")
 	httpAccount, err := account.New(ctx, federatingClient, logicMod)
 	if err != nil {
 		l.Errorf("account module: %s", err.Error())
@@ -91,7 +127,7 @@ var Start action.Action = func(ctx context.Context) error {
 	}
 	webModules = append(webModules, httpAccount)
 
-	l.Infof("adding status module")
+	l.Info("adding status module")
 	httpStatus, err := status.New(ctx)
 	if err != nil {
 		l.Errorf("status module: %s", err.Error())
@@ -100,7 +136,16 @@ var Start action.Action = func(ctx context.Context) error {
 	}
 	webModules = append(webModules, httpStatus)
 
-	l.Infof("adding terms module")
+	l.Info("adding pubkey module")
+	httpPubkey, err := pubkey.New(ctx, logicMod)
+	if err != nil {
+		l.Errorf("pubkey module: %s", err.Error())
+
+		return err
+	}
+	webModules = append(webModules, httpPubkey)
+
+	l.Info("adding terms module")
 	httpTerms, err := terms.New(ctx, logicMod)
 	if err != nil {
 		l.Errorf("terms module: %s", err.Error())
@@ -109,7 +154,7 @@ var Start action.Action = func(ctx context.Context) error {
 	}
 	webModules = append(webModules, httpTerms)
 
-	l.Infof("adding versions module")
+	l.Info("adding versions module")
 	httpVersions, err := versions.New(ctx)
 	if err != nil {
 		l.Errorf("versions module: %s", err.Error())

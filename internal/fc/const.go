@@ -1,11 +1,12 @@
 package fc
 
-import "time"
-
 const (
-	dnsDefaultCachePeriod             = 1 * time.Minute
-	homeServerInvalidCachePeriod      = 1 * time.Hour
-	wellKnownDefaultCachePeriod       = 24 * time.Hour
-	wellKnownDefaultCachePeriodJitter = 10 * time.Minute
-	wellKnownDefaultMaxPeriod         = 48 * time.Hour
+	minute = 60
+	hour   = 3600
+
+	dnsDefaultCachePeriod             = 5 * minute
+	homeServerInvalidCachePeriod      = 1 * hour
+	wellKnownDefaultCachePeriod       = 24 * hour
+	wellKnownDefaultCachePeriodJitter = 10 * minute
+	wellKnownDefaultMaxPeriod         = 48 * hour
 )

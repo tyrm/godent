@@ -46,9 +46,9 @@ func (c *Client) fetchServerWellKnown(ctx context.Context, serverName string) (s
 
 	cachePeriod, err := cachePeriodFromHeaders(resp)
 	if err != nil {
-		cachePeriod = int(wellKnownDefaultCachePeriod.Seconds()) + rand.Intn(int(wellKnownDefaultCachePeriodJitter.Seconds()))
+		cachePeriod = wellKnownDefaultCachePeriod + rand.Intn(wellKnownDefaultCachePeriodJitter)
 	} else {
-		cachePeriod = int(math.Min(float64(cachePeriod), wellKnownDefaultMaxPeriod.Seconds()))
+		cachePeriod = int(math.Min(float64(cachePeriod), wellKnownDefaultMaxPeriod))
 	}
 
 	return data.MatrixServer, cachePeriod, nil
@@ -66,5 +66,5 @@ func (c *Client) fetchServerSRV(ctx context.Context, serverName string) (string,
 		return "", 0, ErrHomeServerNotFound
 	}
 
-	return fmt.Sprintf("%s:%d", strings.TrimSuffix(srvs[0].Target, "."), srvs[0].Port), int(dnsDefaultCachePeriod.Seconds()), nil
+	return fmt.Sprintf("%s:%d", strings.TrimSuffix(srvs[0].Target, "."), srvs[0].Port), dnsDefaultCachePeriod, nil
 }

@@ -7,6 +7,7 @@ import (
 
 // Server adds all flags for running the server.
 func Server(cmd *cobra.Command, values config.Values) {
+	cache(cmd, values)
 	Database(cmd, values)
 	Redis(cmd, values)
 

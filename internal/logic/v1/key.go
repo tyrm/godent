@@ -4,6 +4,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -15,6 +16,15 @@ func (logic *Logic) GenerateSigningKey() (ed25519.PrivateKey, error) {
 	_, priv, err := ed25519.GenerateKey(rand.Reader)
 
 	return priv, err
+}
+
+func (logic *Logic) GetPublicKey() (string, error) {
+	pubKey, ok := logic.signingKey.Public().(ed25519.PublicKey)
+	if !ok {
+		return "", errors.New("public key not ed25519")
+	}
+
+	return base64.StdEncoding.WithPadding(base64.NoPadding).EncodeToString(pubKey), nil
 }
 
 func getPrivateKey() (ed25519.PrivateKey, error) {

@@ -22,9 +22,11 @@ func (*Server) middleware(next http.Handler) http.Handler {
 		wx.Header().Set("Access-Control-Allow-Origin", "*")
 		wx.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		wx.Header().Set("Access-Control-Allow-Headers", "*")
-		wx.Header().Set("Content-Type", "application/json")
 		wx.Header().Set("Permissions-Policy", "interest-cohort=()")
 		wx.Header().Set("X-Godent-Version", viper.GetString(config.Keys.SoftwareVersion))
+		if r.Method != http.MethodOptions {
+			wx.Header().Set("Content-Type", "application/json")
+		}
 
 		// Do Request
 		next.ServeHTTP(wx, r)

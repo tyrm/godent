@@ -17,6 +17,9 @@ type Values struct {
 	TermsURLs          map[string]interface{}
 	TermsVersion       string
 
+	// cache
+	CacheStore string
+
 	// database
 	DBAddress   string
 	DBPort      int
@@ -46,6 +49,9 @@ var Defaults = Values{
 	// application
 	ApplicationName:    "godent",
 	ApplicationWebsite: "https://github.com/tyrm/godent",
+
+	// cache
+	CacheStore: CacheStoreMemory,
 
 	// database
 	DBAddress:   "localhost",

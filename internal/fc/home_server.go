@@ -2,8 +2,8 @@ package fc
 
 import (
 	"context"
-	"time"
-
+	"errors"
+	"github.com/tyrm/godent/internal/cache"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -11,15 +11,23 @@ func (c *Client) getHomeServer(ctx context.Context, serverName string) string {
 	ctx, tracer := c.tracer.Start(ctx, "getHomeServer", trace.WithSpanKind(trace.SpanKindInternal))
 	defer tracer.End()
 
-	cached := c.homeServerCache.Get(serverName)
-	if cached != nil {
-		return cached.Value()
+	l := logger.WithField("func", "getHomeServer")
+
+	homeServer, err := c.cache.GetHomeServer(ctx, serverName)
+	if err != nil && !errors.Is(err, cache.ErrMiss) {
+		l.Warnf("cache get: %s", err.Error())
+	}
+	if err == nil {
+		return homeServer
 	}
 
 	// try to get http
 	homeServer, cachePeriod, err := c.fetchServerWellKnown(ctx, serverName)
 	if err == nil {
-		c.homeServerCache.Set(serverName, homeServer, time.Duration(cachePeriod)*time.Second)
+		cerr := c.cache.SetHomeServer(ctx, serverName, homeServer, cachePeriod)
+		if cerr != nil {
+			l.Warnf("cache set: %s", cerr.Error())
+		}
 
 		return homeServer
 	}
@@ -27,11 +35,17 @@ func (c *Client) getHomeServer(ctx context.Context, serverName string) string {
 	// try to get dns
 	homeServer, cachePeriod, err = c.fetchServerSRV(ctx, serverName)
 	if err == nil {
-		c.homeServerCache.Set(serverName, homeServer, time.Duration(cachePeriod)*time.Second)
+		cerr := c.cache.SetHomeServer(ctx, serverName, homeServer, dnsDefaultCachePeriod)
+		if cerr != nil {
+			l.Warnf("cache set: %s", cerr.Error())
+		}
 
 		return homeServer
 	}
-	c.homeServerCache.Set(serverName, serverName, homeServerInvalidCachePeriod)
+	cerr := c.cache.SetHomeServer(ctx, serverName, homeServer, homeServerInvalidCachePeriod)
+	if cerr != nil {
+		l.Warnf("cache set: %s", cerr.Error())
+	}
 
 	return serverName
 }
