@@ -21,7 +21,7 @@ func New(db db.DB, fc *fc.Client) *Logic {
 	return &Logic{
 		db:     db,
 		fc:     fc,
-		tracer: otel.Tracer("internal/logic"),
+		tracer: otel.Tracer("internal/logic/v1"),
 	}
 }
 

@@ -24,10 +24,15 @@ func (c *Client) CreateEphemeralPublicKey(ctx context.Context, ephemeralPublicKe
 }
 
 func (c *Client) IncEphemeralPublicKeyVerifyCountByPublicKey(ctx context.Context, publicKey string) (int64, db.Error) {
+	l := logger.WithField("func", "IncEphemeralPublicKeyVerifyCountByPublicKey")
+
 	query := c.db.NewUpdate().
 		Model((*models.EphemeralPublicKey)(nil)).
 		Set("verify_count = verify_count + 1").
+		Set("updated_at = CURRENT_TIMESTAMP").
 		Where("public_key = ?", publicKey)
+
+	l.Tracef("query: %s", query.String())
 
 	result, err := query.Exec(ctx)
 	if err != nil {

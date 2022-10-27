@@ -8,6 +8,8 @@ import (
 	"errors"
 	"strings"
 
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/spf13/viper"
 	"github.com/tyrm/godent/internal/config"
 	"github.com/tyrm/godent/internal/logic"
@@ -29,15 +31,29 @@ func (logic *Logic) GetPublicKey() (string, error) {
 }
 
 func (logic *Logic) IsEphemeralPubKeyValid(ctx context.Context, pubKey string) (bool, error) {
-	// TODO implement me
-	panic("implement me")
+	ctx, tracer := logic.tracer.Start(ctx, "IsEphemeralPubKeyValid", trace.WithSpanKind(trace.SpanKindInternal))
+	defer tracer.End()
+
+	rowsEffected, err := logic.db.IncEphemeralPublicKeyVerifyCountByPublicKey(ctx, pubKey)
+	if err != nil {
+		return false, err
+	}
+
+	return rowsEffected > 0, nil
 }
 
 func (logic *Logic) IsPubKeyValid(ctx context.Context, pubKey string) (bool, error) {
+	_, tracer := logic.tracer.Start(ctx, "IsPubKeyValid", trace.WithSpanKind(trace.SpanKindInternal))
+	defer tracer.End()
+
+	l := logger.WithField("func", "IsPubKeyValid")
+
 	publicKey, err := logic.GetPublicKey()
 	if err != nil {
 		return false, err
 	}
+
+	l.Tracef("is '%s' == '%s': %T", pubKey, publicKey, pubKey == publicKey)
 
 	return pubKey == publicKey, nil
 }
