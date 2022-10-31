@@ -170,7 +170,7 @@ github.com/uptrace/bun/extra/bunotel
 # github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.17
 ## explicit; go 1.18
 github.com/uptrace/opentelemetry-go-extra/otelsql
-# github.com/uptrace/uptrace-go v1.11.1
+# github.com/uptrace/uptrace-go v1.11.4
 ## explicit; go 1.18
 github.com/uptrace/uptrace-go/internal
 github.com/uptrace/uptrace-go/uptrace
@@ -300,7 +300,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
+# google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/rpc/errdetails

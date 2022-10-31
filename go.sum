@@ -324,8 +324,8 @@ github.com/uptrace/bun/extra/bunotel v1.1.8 h1:Sg7XcLLI+KTalKg36aRpOJovYF9UUVuN5
 github.com/uptrace/bun/extra/bunotel v1.1.8/go.mod h1:1chzcC5wkd7FP+/SRUbmmqF0DL1ed+NgdHlGE+GIkPs=
 github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.17 h1:LJgQBGDf/u2RxdAiQvb47lZ0PuQYZutJgjmxLPaFKLU=
 github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.17/go.mod h1:Ohf26FVZL1ckvgqrwLoZfb8SRwlCe6otyKlpolfdflI=
-github.com/uptrace/uptrace-go v1.11.1 h1:NeRre51mJCeaOmsvQ6QM07dFB38STOPNmolLiPXx2g0=
-github.com/uptrace/uptrace-go v1.11.1/go.mod h1:pJnQj8afmBbixSMo7iXV55RbmoAGdNgOOVRbCEk9yaU=
+github.com/uptrace/uptrace-go v1.11.4 h1:BZWpzr2yhwFvmOLsRG97hgs60xYwaTnGFx2zPl///Gs=
+github.com/uptrace/uptrace-go v1.11.4/go.mod h1:AwD14IBYEip4q21cxks+CsNkEINWsKpsLd8AS8HFdMs=
 github.com/vmihailenco/msgpack/v5 v5.3.5 h1:5gO0H1iULLWGhs2H5tbAHIZTV8/cYafcFOr9znI5mJU=
 github.com/vmihailenco/msgpack/v5 v5.3.5/go.mod h1:7xyJ9e+0+9SaZT0Wt1RGleJXzli6Q/V5KbhBonMG9jc=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
@@ -674,8 +674,8 @@ google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d/go.mod h1:FWY/as6D
 google.golang.org/genproto v0.0.0-20210108203827-ffc7fda8c3d7/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20210226172003-ab064af71705/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
-google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e h1:S9GbmC1iCgvbLyAokVCwiO6tVIrU9Y7c5oMx1V/ki/Y=
-google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e/go.mod h1:9qHF0xnpdSfF6knlcsnpzUu5y+rpwgbvsyGAZPBMg4s=
+google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c h1:QgY/XxIAIeccR+Ca/rDdKubLIU9rcJ3xfy1DC/Wd2Oo=
+google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c/go.mod h1:CGI5F/G+E5bKwmfYo09AXuVN4dD894kIKUFmVbP2/Fo=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
 google.golang.org/grpc v1.20.1/go.mod h1:10oTOabMzJvdu6/UiuZezV6QK5dSlG84ov/aaiqXj38=
 google.golang.org/grpc v1.21.1/go.mod h1:oYelfM1adQP15Ek0mdvEgi9Df8B9CZIaU1084ijfRaM=
