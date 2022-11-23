@@ -149,7 +149,7 @@ github.com/subosito/gotenv
 # github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 ## explicit
 github.com/tmthrgd/go-hex
-# github.com/uptrace/bun v1.1.8
+# github.com/uptrace/bun v1.1.9
 ## explicit; go 1.18
 github.com/uptrace/bun
 github.com/uptrace/bun/dialect
@@ -161,7 +161,7 @@ github.com/uptrace/bun/internal/parser
 github.com/uptrace/bun/internal/tagparser
 github.com/uptrace/bun/migrate
 github.com/uptrace/bun/schema
-# github.com/uptrace/bun/dialect/pgdialect v1.1.8
+# github.com/uptrace/bun/dialect/pgdialect v1.1.9
 ## explicit; go 1.18
 github.com/uptrace/bun/dialect/pgdialect
 # github.com/uptrace/bun/extra/bunotel v1.1.8
@@ -278,7 +278,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 ## explicit
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.1.0
+# golang.org/x/sys v0.2.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
