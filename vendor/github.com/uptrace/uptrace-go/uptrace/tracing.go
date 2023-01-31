@@ -93,7 +93,7 @@ func otlpTraceClient(conf *config, dsn *DSN) otlptrace.Client {
 
 func queueSize() int {
 	const min = 1000
-	const max = 8000
+	const max = 16000
 
 	n := (runtime.GOMAXPROCS(0) / 2) * 1000
 	if n < min {
@@ -116,15 +116,14 @@ var _ sdktrace.IDGenerator = (*idGenerator)(nil)
 
 // NewIDs returns a new trace and span ID.
 func (gen *idGenerator) NewIDs(ctx context.Context) (trace.TraceID, trace.SpanID) {
-	now := time.Now()
+	unixNano := time.Now().UnixNano()
 
 	gen.Lock()
 	defer gen.Unlock()
 
 	tid := trace.TraceID{}
-	// TraceIDRatioBased sampler expects first 8 bytes to be random.
-	_, _ = gen.randSource.Read(tid[:8])
-	binary.BigEndian.PutUint64(tid[8:], uint64(now.UnixNano()))
+	binary.BigEndian.PutUint64(tid[:8], uint64(unixNano))
+	_, _ = gen.randSource.Read(tid[8:])
 
 	sid := trace.SpanID{}
 	_, _ = gen.randSource.Read(sid[:])

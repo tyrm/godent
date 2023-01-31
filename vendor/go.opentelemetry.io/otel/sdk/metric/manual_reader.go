@@ -23,14 +23,17 @@ import (
 	"go.opentelemetry.io/otel/internal/global"
 	"go.opentelemetry.io/otel/sdk/metric/aggregation"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
-	"go.opentelemetry.io/otel/sdk/metric/view"
 )
 
-// manualReader is a a simple Reader that allows an application to
+// manualReader is a simple Reader that allows an application to
 // read metrics on demand.
 type manualReader struct {
-	producer     atomic.Value
+	sdkProducer  atomic.Value
 	shutdownOnce sync.Once
+
+	mu                sync.Mutex
+	isShutdown        bool
+	externalProducers atomic.Value
 
 	temporalitySelector TemporalitySelector
 	aggregationSelector AggregationSelector
@@ -42,29 +45,46 @@ var _ = map[Reader]struct{}{&manualReader{}: {}}
 // NewManualReader returns a Reader which is directly called to collect metrics.
 func NewManualReader(opts ...ManualReaderOption) Reader {
 	cfg := newManualReaderConfig(opts)
-	return &manualReader{
+	r := &manualReader{
 		temporalitySelector: cfg.temporalitySelector,
 		aggregationSelector: cfg.aggregationSelector,
 	}
+	r.externalProducers.Store([]Producer{})
+	return r
 }
 
-// register stores the Producer which enables the caller to read
-// metrics on demand.
-func (mr *manualReader) register(p producer) {
+// register stores the sdkProducer which enables the caller
+// to read metrics from the SDK on demand.
+func (mr *manualReader) register(p sdkProducer) {
 	// Only register once. If producer is already set, do nothing.
-	if !mr.producer.CompareAndSwap(nil, produceHolder{produce: p.produce}) {
+	if !mr.sdkProducer.CompareAndSwap(nil, produceHolder{produce: p.produce}) {
 		msg := "did not register manual reader"
 		global.Error(errDuplicateRegister, msg)
 	}
 }
 
+// RegisterProducer stores the external Producer which enables the caller
+// to read metrics on demand.
+func (mr *manualReader) RegisterProducer(p Producer) {
+	mr.mu.Lock()
+	defer mr.mu.Unlock()
+	if mr.isShutdown {
+		return
+	}
+	currentProducers := mr.externalProducers.Load().([]Producer)
+	newProducers := []Producer{}
+	newProducers = append(newProducers, currentProducers...)
+	newProducers = append(newProducers, p)
+	mr.externalProducers.Store(newProducers)
+}
+
 // temporality reports the Temporality for the instrument kind provided.
-func (mr *manualReader) temporality(kind view.InstrumentKind) metricdata.Temporality {
+func (mr *manualReader) temporality(kind InstrumentKind) metricdata.Temporality {
 	return mr.temporalitySelector(kind)
 }
 
 // aggregation returns what Aggregation to use for kind.
-func (mr *manualReader) aggregation(kind view.InstrumentKind) aggregation.Aggregation { // nolint:revive  // import-shadow for method scoped by type.
+func (mr *manualReader) aggregation(kind InstrumentKind) aggregation.Aggregation { // nolint:revive  // import-shadow for method scoped by type.
 	return mr.aggregationSelector(kind)
 }
 
@@ -78,18 +98,23 @@ func (mr *manualReader) Shutdown(context.Context) error {
 	err := ErrReaderShutdown
 	mr.shutdownOnce.Do(func() {
 		// Any future call to Collect will now return ErrReaderShutdown.
-		mr.producer.Store(produceHolder{
+		mr.sdkProducer.Store(produceHolder{
 			produce: shutdownProducer{}.produce,
 		})
+		mr.mu.Lock()
+		defer mr.mu.Unlock()
+		mr.isShutdown = true
+		// release references to Producer(s)
+		mr.externalProducers.Store([]Producer{})
 		err = nil
 	})
 	return err
 }
 
-// Collect gathers all metrics from the SDK, calling any callbacks necessary.
-// Collect will return an error if called after shutdown.
+// Collect gathers all metrics from the SDK and other Producers, calling any
+// callbacks necessary. Collect will return an error if called after shutdown.
 func (mr *manualReader) Collect(ctx context.Context) (metricdata.ResourceMetrics, error) {
-	p := mr.producer.Load()
+	p := mr.sdkProducer.Load()
 	if p == nil {
 		return metricdata.ResourceMetrics{}, ErrReaderNotRegistered
 	}
@@ -104,7 +129,19 @@ func (mr *manualReader) Collect(ctx context.Context) (metricdata.ResourceMetrics
 		return metricdata.ResourceMetrics{}, err
 	}
 
-	return ph.produce(ctx)
+	rm, err := ph.produce(ctx)
+	if err != nil {
+		return metricdata.ResourceMetrics{}, err
+	}
+	var errs []error
+	for _, producer := range mr.externalProducers.Load().([]Producer) {
+		externalMetrics, err := producer.Produce(ctx)
+		if err != nil {
+			errs = append(errs, err)
+		}
+		rm.ScopeMetrics = append(rm.ScopeMetrics, externalMetrics...)
+	}
+	return rm, unifyErrors(errs)
 }
 
 // manualReaderConfig contains configuration options for a ManualReader.
@@ -128,4 +165,54 @@ func newManualReaderConfig(opts []ManualReaderOption) manualReaderConfig {
 // ManualReaderOption applies a configuration option value to a ManualReader.
 type ManualReaderOption interface {
 	applyManual(manualReaderConfig) manualReaderConfig
+}
+
+// WithTemporalitySelector sets the TemporalitySelector a reader will use to
+// determine the Temporality of an instrument based on its kind. If this
+// option is not used, the reader will use the DefaultTemporalitySelector.
+func WithTemporalitySelector(selector TemporalitySelector) ManualReaderOption {
+	return temporalitySelectorOption{selector: selector}
+}
+
+type temporalitySelectorOption struct {
+	selector func(instrument InstrumentKind) metricdata.Temporality
+}
+
+// applyManual returns a manualReaderConfig with option applied.
+func (t temporalitySelectorOption) applyManual(mrc manualReaderConfig) manualReaderConfig {
+	mrc.temporalitySelector = t.selector
+	return mrc
+}
+
+// WithAggregationSelector sets the AggregationSelector a reader will use to
+// determine the aggregation to use for an instrument based on its kind. If
+// this option is not used, the reader will use the DefaultAggregationSelector
+// or the aggregation explicitly passed for a view matching an instrument.
+func WithAggregationSelector(selector AggregationSelector) ManualReaderOption {
+	// Deep copy and validate before using.
+	wrapped := func(ik InstrumentKind) aggregation.Aggregation {
+		a := selector(ik)
+		cpA := a.Copy()
+		if err := cpA.Err(); err != nil {
+			cpA = DefaultAggregationSelector(ik)
+			global.Error(
+				err, "using default aggregation instead",
+				"aggregation", a,
+				"replacement", cpA,
+			)
+		}
+		return cpA
+	}
+
+	return aggregationSelectorOption{selector: wrapped}
+}
+
+type aggregationSelectorOption struct {
+	selector AggregationSelector
+}
+
+// applyManual returns a manualReaderConfig with option applied.
+func (t aggregationSelectorOption) applyManual(c manualReaderConfig) manualReaderConfig {
+	c.aggregationSelector = t.selector
+	return c
 }

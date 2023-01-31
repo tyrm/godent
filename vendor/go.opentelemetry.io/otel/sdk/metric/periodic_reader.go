@@ -25,7 +25,6 @@ import (
 	"go.opentelemetry.io/otel/internal/global"
 	"go.opentelemetry.io/otel/sdk/metric/aggregation"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
-	"go.opentelemetry.io/otel/sdk/metric/view"
 )
 
 // Default periodic reader timing.
@@ -36,20 +35,16 @@ const (
 
 // periodicReaderConfig contains configuration options for a PeriodicReader.
 type periodicReaderConfig struct {
-	interval            time.Duration
-	timeout             time.Duration
-	temporalitySelector TemporalitySelector
-	aggregationSelector AggregationSelector
+	interval time.Duration
+	timeout  time.Duration
 }
 
 // newPeriodicReaderConfig returns a periodicReaderConfig configured with
 // options.
 func newPeriodicReaderConfig(options []PeriodicReaderOption) periodicReaderConfig {
 	c := periodicReaderConfig{
-		interval:            defaultInterval,
-		timeout:             defaultTimeout,
-		temporalitySelector: DefaultTemporalitySelector,
-		aggregationSelector: DefaultAggregationSelector,
+		interval: defaultInterval,
+		timeout:  defaultTimeout,
 	}
 	for _, o := range options {
 		c = o.applyPeriodic(c)
@@ -118,10 +113,8 @@ func NewPeriodicReader(exporter Exporter, options ...PeriodicReaderOption) Reade
 		flushCh:  make(chan chan error),
 		cancel:   cancel,
 		done:     make(chan struct{}),
-
-		temporalitySelector: conf.temporalitySelector,
-		aggregationSelector: conf.aggregationSelector,
 	}
+	r.externalProducers.Store([]Producer{})
 
 	go func() {
 		defer func() { close(r.done) }()
@@ -134,14 +127,15 @@ func NewPeriodicReader(exporter Exporter, options ...PeriodicReaderOption) Reade
 // periodicReader is a Reader that continuously collects and exports metric
 // data at a set interval.
 type periodicReader struct {
-	producer atomic.Value
+	sdkProducer atomic.Value
+
+	mu                sync.Mutex
+	isShutdown        bool
+	externalProducers atomic.Value
 
 	timeout  time.Duration
 	exporter Exporter
 	flushCh  chan chan error
-
-	temporalitySelector TemporalitySelector
-	aggregationSelector AggregationSelector
 
 	done         chan struct{}
 	cancel       context.CancelFunc
@@ -177,22 +171,36 @@ func (r *periodicReader) run(ctx context.Context, interval time.Duration) {
 }
 
 // register registers p as the producer of this reader.
-func (r *periodicReader) register(p producer) {
+func (r *periodicReader) register(p sdkProducer) {
 	// Only register once. If producer is already set, do nothing.
-	if !r.producer.CompareAndSwap(nil, produceHolder{produce: p.produce}) {
+	if !r.sdkProducer.CompareAndSwap(nil, produceHolder{produce: p.produce}) {
 		msg := "did not register periodic reader"
 		global.Error(errDuplicateRegister, msg)
 	}
 }
 
+// RegisterProducer registers p as an external Producer of this reader.
+func (r *periodicReader) RegisterProducer(p Producer) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.isShutdown {
+		return
+	}
+	currentProducers := r.externalProducers.Load().([]Producer)
+	newProducers := []Producer{}
+	newProducers = append(newProducers, currentProducers...)
+	newProducers = append(newProducers, p)
+	r.externalProducers.Store(newProducers)
+}
+
 // temporality reports the Temporality for the instrument kind provided.
-func (r *periodicReader) temporality(kind view.InstrumentKind) metricdata.Temporality {
-	return r.temporalitySelector(kind)
+func (r *periodicReader) temporality(kind InstrumentKind) metricdata.Temporality {
+	return r.exporter.Temporality(kind)
 }
 
 // aggregation returns what Aggregation to use for kind.
-func (r *periodicReader) aggregation(kind view.InstrumentKind) aggregation.Aggregation { // nolint:revive  // import-shadow for method scoped by type.
-	return r.aggregationSelector(kind)
+func (r *periodicReader) aggregation(kind InstrumentKind) aggregation.Aggregation { // nolint:revive  // import-shadow for method scoped by type.
+	return r.exporter.Aggregation(kind)
 }
 
 // collectAndExport gather all metric data related to the periodicReader r from
@@ -206,12 +214,13 @@ func (r *periodicReader) collectAndExport(ctx context.Context) error {
 }
 
 // Collect gathers and returns all metric data related to the Reader from
-// the SDK. The returned metric data is not exported to the configured
-// exporter, it is left to the caller to handle that if desired.
+// the SDK and other Producers. The returned metric data is not exported
+// to the configured exporter, it is left to the caller to handle that if
+// desired.
 //
 // An error is returned if this is called after Shutdown.
 func (r *periodicReader) Collect(ctx context.Context) (metricdata.ResourceMetrics, error) {
-	return r.collect(ctx, r.producer.Load())
+	return r.collect(ctx, r.sdkProducer.Load())
 }
 
 // collect unwraps p as a produceHolder and returns its produce results.
@@ -229,7 +238,20 @@ func (r *periodicReader) collect(ctx context.Context, p interface{}) (metricdata
 		err := fmt.Errorf("periodic reader: invalid producer: %T", p)
 		return metricdata.ResourceMetrics{}, err
 	}
-	return ph.produce(ctx)
+
+	rm, err := ph.produce(ctx)
+	if err != nil {
+		return metricdata.ResourceMetrics{}, err
+	}
+	var errs []error
+	for _, producer := range r.externalProducers.Load().([]Producer) {
+		externalMetrics, err := producer.Produce(ctx)
+		if err != nil {
+			errs = append(errs, err)
+		}
+		rm.ScopeMetrics = append(rm.ScopeMetrics, externalMetrics...)
+	}
+	return rm, unifyErrors(errs)
 }
 
 // export exports metric data m using r's exporter.
@@ -270,7 +292,7 @@ func (r *periodicReader) Shutdown(ctx context.Context) error {
 		<-r.done
 
 		// Any future call to Collect will now return ErrReaderShutdown.
-		ph := r.producer.Swap(produceHolder{
+		ph := r.sdkProducer.Swap(produceHolder{
 			produce: shutdownProducer{}.produce,
 		})
 
@@ -287,6 +309,12 @@ func (r *periodicReader) Shutdown(ctx context.Context) error {
 		if err == nil || err == ErrReaderShutdown {
 			err = sErr
 		}
+
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		r.isShutdown = true
+		// release references to Producer(s)
+		r.externalProducers.Store([]Producer{})
 	})
 	return err
 }
