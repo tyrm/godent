@@ -6,9 +6,12 @@
 [![Chat](https://discordapp.com/api/guilds/752070105847955518/widget.png)](https://discord.gg/rWtp5Aj)
 
 > Bun is brought to you by :star: [**uptrace/uptrace**](https://github.com/uptrace/uptrace). Uptrace
-> is an open source and blazingly fast
-> [distributed tracing tool](https://get.uptrace.dev/compare/distributed-tracing-tools.html) powered
-> by OpenTelemetry and ClickHouse. Give it a star as well!
+> is an open-source APM tool that supports distributed tracing, metrics, and logs. You can use it to
+> monitor applications and set up automatic alerts to receive notifications via email, Slack,
+> Telegram, and others.
+>
+> See [OpenTelemetry](example/opentelemetry) example which demonstrates how you can use Uptrace to
+> monitor Bun.
 
 ## Features
 
@@ -25,7 +28,7 @@
 - [Migrations](https://bun.uptrace.dev/guide/migrations.html).
 - [Soft deletes](https://bun.uptrace.dev/guide/soft-deletes.html).
 
-Resources:
+### Resources
 
 - [**Get started**](https://bun.uptrace.dev/guide/golang-orm.html)
 - [Examples](https://github.com/uptrace/bun/tree/master/example)
@@ -34,7 +37,11 @@ Resources:
 - [Reference](https://pkg.go.dev/github.com/uptrace/bun)
 - [Starter kit](https://github.com/go-bun/bun-starter-kit)
 
-Featured projects using Bun:
+### Tutorials
+
+Wrote a tutorial for Bun? Create a PR to add here and on [Bun](https://bun.uptrace.dev/) site.
+
+### Featured projects using Bun
 
 - [uptrace](https://github.com/uptrace/uptrace) - Distributed tracing and metrics.
 - [paralus](https://github.com/paralus/paralus) - All-in-one Kubernetes access manager.
@@ -126,9 +133,11 @@ See [**Getting started**](https://bun.uptrace.dev/guide/golang-orm.html) guide a
 - [Golang ClickHouse ORM](https://github.com/uptrace/go-clickhouse)
 - [Golang msgpack](https://github.com/vmihailenco/msgpack)
 
-## Contributors
+## Contributing
 
-Thanks to all the people who already contributed!
+See [CONTRIBUTING.md](CONTRIBUTING.md) for some hints.
+
+And thanks to all the people who already contributed!
 
 <a href="https://github.com/uptrace/bun/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=uptrace/bun" />

@@ -1,3 +1,59 @@
+## [1.1.11](https://github.com/uptrace/bun/compare/v1.1.10...v1.1.11) (2023-02-01)
+
+
+### Bug Fixes
+
+* add support for inserting values with unicode encoding for mssql dialect ([e98c6c0](https://github.com/uptrace/bun/commit/e98c6c0f033b553bea3bbc783aa56c2eaa17718f))
+* fix relation tag ([a3eedff](https://github.com/uptrace/bun/commit/a3eedff49700490d4998dcdcdc04f554d8f17166))
+
+
+
+## [1.1.10](https://github.com/uptrace/bun/compare/v1.1.9...v1.1.10) (2023-01-16)
+
+
+### Bug Fixes
+
+* allow QueryEvent to better detect operations in raw queries ([8e44735](https://github.com/uptrace/bun/commit/8e4473538364bae6562055d35e94c3e9c0b77691))
+* append default VARCHAR length instead of hardcoding it in the type definition ([e5079c7](https://github.com/uptrace/bun/commit/e5079c70343ba8c8b410aed23ac1d1ae5a2c9ff6))
+* prevent panic when use pg array with custom database type ([67e4412](https://github.com/uptrace/bun/commit/67e4412a972a9ed5f3a1d07c66957beedbc8a8a3))
+* properly return sql.ErrNoRows when scanning []byte ([996fead](https://github.com/uptrace/bun/commit/996fead2595fbcaff4878b77befe6709a54b3a4d))
+
+
+### Features
+
+*  mssql output support for update or delete query ([#718](https://github.com/uptrace/bun/issues/718)) ([08876b4](https://github.com/uptrace/bun/commit/08876b4d420e761cbfa658aa6bb89b3f7c62c240))
+* add Err method to query builder ([c722c90](https://github.com/uptrace/bun/commit/c722c90f3dce2642ca4f4c2ab3f9a35cd496b557))
+* add support for time.Time array in Postgres ([3dd6f3b](https://github.com/uptrace/bun/commit/3dd6f3b2ac1bfbcda08240dc1676647b61715a9c))
+* mssql and pg merge query ([#723](https://github.com/uptrace/bun/issues/723)) ([deea764](https://github.com/uptrace/bun/commit/deea764d9380b16aad34228aa32717d10f2a4bab))
+* setError on attempt to set non-positive .Varchar() ([3335e0b](https://github.com/uptrace/bun/commit/3335e0b9d6d3f424145e1f715223a0fffe773d9a))
+
+
+### Reverts
+
+* go 1.18 ([67a4488](https://github.com/uptrace/bun/commit/67a448897eaaf1ebc54d629dfd3b2509b35da352))
+
+
+
+## [1.1.9](https://github.com/uptrace/bun/compare/v1.1.8...v1.1.9) (2022-11-23)
+
+
+### Bug Fixes
+
+* addng dialect override for append-bool ([#695](https://github.com/uptrace/bun/issues/695)) ([338f2f0](https://github.com/uptrace/bun/commit/338f2f04105ad89e64530db86aeb387e2ad4789e))
+* don't call hooks twice for whereExists ([9057857](https://github.com/uptrace/bun/commit/90578578e717f248e4b6eb114c5b495fd8d4ed41))
+* don't lock migrations when running Migrate and Rollback ([69a7354](https://github.com/uptrace/bun/commit/69a7354d987ff2ed5338c9ef5f4ce320724299ab))
+* **query:** make WhereDeleted compatible with ForceDelete ([299c3fd](https://github.com/uptrace/bun/commit/299c3fd57866aaecd127a8f219c95332898475db)), closes [#673](https://github.com/uptrace/bun/issues/673)
+* relation join soft delete SQL generate ([a98f4e9](https://github.com/uptrace/bun/commit/a98f4e9f2bbdbc2b81cd13aa228a1a91eb905ba2))
+
+
+### Features
+
+* add migrate.Exec ([d368bbe](https://github.com/uptrace/bun/commit/d368bbe52bb1ee3dabf0aada190bf967eec10255))
+* **update:** "skipupdate" while bulk ([1a32b2f](https://github.com/uptrace/bun/commit/1a32b2ffbd5bc9a8d8b5978dd0f16c9fb79242ee))
+* **zerolog:** added zerolog hook ([9d2267d](https://github.com/uptrace/bun/commit/9d2267d414b47164ab6ceada55bf311ad548a6b0))
+
+
+
 ## [1.1.8](https://github.com/uptrace/bun/compare/v1.1.7...v1.1.8) (2022-08-29)
 
 
