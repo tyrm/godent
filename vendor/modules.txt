@@ -149,7 +149,7 @@ github.com/subosito/gotenv
 # github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 ## explicit
 github.com/tmthrgd/go-hex
-# github.com/uptrace/bun v1.1.8
+# github.com/uptrace/bun v1.1.11
 ## explicit; go 1.18
 github.com/uptrace/bun
 github.com/uptrace/bun/dialect
@@ -164,10 +164,10 @@ github.com/uptrace/bun/schema
 # github.com/uptrace/bun/dialect/pgdialect v1.1.8
 ## explicit; go 1.18
 github.com/uptrace/bun/dialect/pgdialect
-# github.com/uptrace/bun/extra/bunotel v1.1.8
+# github.com/uptrace/bun/extra/bunotel v1.1.11
 ## explicit; go 1.18
 github.com/uptrace/bun/extra/bunotel
-# github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.17
+# github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.19
 ## explicit; go 1.18
 github.com/uptrace/opentelemetry-go-extra/otelsql
 # github.com/uptrace/uptrace-go v1.11.1
@@ -189,7 +189,7 @@ go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux
 # go.opentelemetry.io/contrib/instrumentation/runtime v0.36.4
 ## explicit; go 1.18
 go.opentelemetry.io/contrib/instrumentation/runtime
-# go.opentelemetry.io/otel v1.11.1
+# go.opentelemetry.io/otel v1.12.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel
 go.opentelemetry.io/otel/attribute
@@ -227,7 +227,7 @@ go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc
 # go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.11.1
 ## explicit; go 1.18
 go.opentelemetry.io/otel/exporters/stdout/stdouttrace
-# go.opentelemetry.io/otel/metric v0.33.0
+# go.opentelemetry.io/otel/metric v0.35.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel/metric
 go.opentelemetry.io/otel/metric/global
@@ -253,7 +253,7 @@ go.opentelemetry.io/otel/sdk/metric/aggregation
 go.opentelemetry.io/otel/sdk/metric/internal
 go.opentelemetry.io/otel/sdk/metric/metricdata
 go.opentelemetry.io/otel/sdk/metric/view
-# go.opentelemetry.io/otel/trace v1.11.1
+# go.opentelemetry.io/otel/trace v1.12.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel/trace
 # go.opentelemetry.io/proto/otlp v0.19.0
@@ -278,7 +278,7 @@ golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20220929204114-8fcdb60fdcc0
 ## explicit
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.1.0
+# golang.org/x/sys v0.4.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
