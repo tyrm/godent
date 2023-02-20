@@ -57,17 +57,30 @@ func (q *SelectQuery) Conn(db IConn) *SelectQuery {
 }
 
 func (q *SelectQuery) Model(model interface{}) *SelectQuery {
-	q.setTableModel(model)
+	q.setModel(model)
+	return q
+}
+
+func (q *SelectQuery) Err(err error) *SelectQuery {
+	q.setErr(err)
 	return q
 }
 
 // Apply calls the fn passing the SelectQuery as an argument.
 func (q *SelectQuery) Apply(fn func(*SelectQuery) *SelectQuery) *SelectQuery {
-	return fn(q)
+	if fn != nil {
+		return fn(q)
+	}
+	return q
 }
 
 func (q *SelectQuery) With(name string, query schema.QueryAppender) *SelectQuery {
-	q.addWith(name, query)
+	q.addWith(name, query, false)
+	return q
+}
+
+func (q *SelectQuery) WithRecursive(name string, query schema.QueryAppender) *SelectQuery {
+	q.addWith(name, query, true)
 	return q
 }
 
@@ -1029,12 +1042,7 @@ func (q *SelectQuery) whereExists(ctx context.Context) (bool, error) {
 	}
 
 	query := internal.String(queryBytes)
-	ctx, event := q.db.beforeQuery(ctx, qq, query, nil, query, q.model)
-
-	res, err := q.exec(ctx, q, query)
-
-	q.db.afterQuery(ctx, event, nil, err)
-
+	res, err := q.exec(ctx, qq, query)
 	if err != nil {
 		return false, err
 	}
